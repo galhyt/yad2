@@ -50,22 +50,35 @@ const getDataTbl = txt => {
     var aDataTbl = []
     const arr = txt.match(/\<div class="feeditem table"[\w\W\s]+?\>[\w\W\s]+?(?=\<div class="realtor_promotion)/g)
     for(var i = 1 ; i < arr.length ; i++) {
-      aDataTbl.push(parseAppartmentData(arr[i]))
+      const appartment = parseAppartmentData(arr[i])
+      if (appartment == null) continue
+      aDataTbl.push(appartment)
     }
+
+    return aDataTbl
 }
 
 const parseAppartmentData = txt => {
-  const priceReg = /\<div[\w\W\s]+?class="price"\>[\w\W\s]+?(\d+(,\d{3})*)(?=[\w\W\s]+?\<\/div\>)/
+  if (txt.indexOf('סאבלט') != -1) return null
+
+  const priceReg = /\<div[^>]+?class="price"\>[\w\W\s]+?(.*)((?!\<\/div\>)[\w\W\s])+(?=\<\/div\>)/
   const sqMrReg = /\<span id="data_SquareMeter_[\w\W\s]+class="val"\>(\d+)(?=\s*\<\/span\>)/
   const floorReg = /\<span id="data_floor_\d+" class="val"\>(\d+|[א-ת]{4})(?=\<\/span\>)/
   const roomsReg = /\<span id="data_rooms_\d+" class="val"\>(\d+(\.\d+){0,1})(?=\<\/span\>)/
   const addressReg = /\<span class="title"\>\s*([^<]+)(?=\s*\<\/span\>)/
 
-  const pricePart = txt.match(priceReg)[1]
+  if (txt.match(roomsReg) == null) return null
+  if (txt.match(sqMrReg) == null) return null
+
+  var pricePart = txt.match(priceReg)[1]
   const sqMrPart = txt.match(sqMrReg)[1]
   const floorPart = txt.match(floorReg)[1]
   const roomPart = txt.match(roomsReg)[1]
   const addressPart = txt.match(addressReg)[1]
+
+  pricePart = pricePart.match(/\d+(,\d{3})*/)
+  if (pricePart == null) return null
+  pricePart = pricePart[0]
 
   const ret = {
     price: Number(pricePart.replace(',', '')),
@@ -80,7 +93,7 @@ const parseAppartmentData = txt => {
 
 exportJson = data => {
   const now = new Date()
-  const fileName = now.getFullYear() + '_' + now.getMonth()+1 + '-' + now.getDate()+1
+  const fileName = now.getFullYear() + '_' + (now.getMonth()+1) + '_' + now.getDate()
   fs.writeFile("data/" + fileName + ".json", JSON.stringify(data), err => {
     if (err != null) throw err
   })
