@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const request = require('request');
 var fs = require('fs')
 
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/";
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(pino);
@@ -48,8 +51,9 @@ const main = () => {
 
 const getDataTbl = txt => {
     var aDataTbl = []
-    const arr = txt.match(/\<div class="feeditem table"[\w\W\s]+?\>[\w\W\s]+?(?=\<div class="realtor_promotion)/g)
+    const arr = txt.match(/\<div class="feeditem table"[\w\W\s]+?\>[\w\W\s]+?\<span [\w\W]+? class="num_ad"\>מספר מודעה: \d+\<\/span\>/g)
     for(var i = 1 ; i < arr.length ; i++) {
+      console.log(arr[i])
       const appartment = parseAppartmentData(arr[i])
       if (appartment == null) continue
       aDataTbl.push(appartment)
@@ -66,7 +70,8 @@ const parseAppartmentData = txt => {
   const floorReg = /\<span id="data_floor_\d+" class="val"\>(\d+|[א-ת]{4})(?=\<\/span\>)/
   const roomsReg = /\<span id="data_rooms_\d+" class="val"\>(\d+(\.\d+){0,1})(?=\<\/span\>)/
   const addressReg = /\<span class="title"\>\s*([^<]+)(?=\s*\<\/span\>)/
-
+  const adNoReg = /\<span [\w\W]+? class="num_ad"\>מספר מודעה: (\d+)\<\/span\>/
+  const dateReg = /\<span [\w\W]+? class="date"\>(\d{2}\/\d{2}\/\d{4})\<\/span\>/
   if (txt.match(roomsReg) == null) return null
   if (txt.match(sqMrReg) == null) return null
 
@@ -75,12 +80,16 @@ const parseAppartmentData = txt => {
   const floorPart = txt.match(floorReg)[1]
   const roomPart = txt.match(roomsReg)[1]
   const addressPart = txt.match(addressReg)[1]
+  const adNo = txt.match(adNoReg)[1]
+  const date = Date.parse(txt.match(dateReg)[1].replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'))
 
   pricePart = pricePart.match(/\d+(,\d{3})*/)
   if (pricePart == null) return null
   pricePart = pricePart[0]
 
   const ret = {
+    adNo: Number(adNo),
+    date: date,
     price: Number(pricePart.replace(',', '')),
     sqMr: Number(sqMrPart),
     floor: floorPart,
@@ -97,6 +106,19 @@ exportJson = data => {
   fs.writeFile("data/" + fileName + ".json", JSON.stringify(data), err => {
     if (err != null) throw err
   })
+}
+
+const addToDb = data => {
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("yad2");
+    
+    dbo.collection("appartments").insertMany(data, function(err, res) {
+      if (err) throw err;
+      console.log("Number of documents inserted: " + res.insertedCount);
+      db.close();
+    });
+  });
 }
 
 main()
