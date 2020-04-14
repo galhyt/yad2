@@ -41,13 +41,23 @@ const main = () => {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
     }
   };
-    request('https://www.yad2.co.il/realestate/rent?city=6300&street=0101', options,  (err, res, body) => {
-    if (err) { return console.log(err); }
+    // request('https://www.yad2.co.il/realestate/rent?city=6300&street=0101', options,  (err, res, body) => {
+    // if (err) { return console.log(err); }
+    //   const data = getDataTbl(body)
+    //   if (data == null) return console.log('Error finding data!')
+    //   console.log("%s no of records %d", new Date().toString(), data.length)
+    //   exportJson(data)
+    //   addToDb(data)
+    // });
+    fs.readFile("C:\\Users\\User\\Desktop\\yad2.html", function(err, body) {
+      if (err) throw(err)
+
       const data = getDataTbl(body)
       if (data == null) return console.log('Error finding data!')
       console.log("%s no of records %d", new Date().toString(), data.length)
-      exportJson(data)
-    });
+      //exportJson(data)
+      addToDb(data)
+    })
 }
 
 const getDataTbl = txt => {
@@ -94,7 +104,7 @@ const parseAppartmentData = itemData => {
   const ret = {
     ad_number: ad_numberPart,
     updated_at: updated_atPart,
-    price: Number(pricePart),
+    price: {date: updated_atPart, value: Number(pricePart)},
     sqMr: Number(sqMrPart),
     floor: floorPart,
     room: Number(roomPart),
