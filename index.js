@@ -44,6 +44,7 @@ const main = () => {
     request('https://www.yad2.co.il/realestate/rent?city=6300&street=0101', options,  (err, res, body) => {
     if (err) { return console.log(err); }
       const data = getDataTbl(body)
+      if (data == null) return console.log('Error finding data!')
       console.log("%s no of records %d", new Date().toString(), data.length)
       exportJson(data)
     });
@@ -51,10 +52,19 @@ const main = () => {
 
 const getDataTbl = txt => {
     var aDataTbl = []
-    const arr = txt.match(/\<div class="feeditem table"[\w\W\s]+?\>[\w\W\s]+?\<span [\w\W]+? class="num_ad"\>מספר מודעה: \d+\<\/span\>/g)
-    for(var i = 1 ; i < arr.length ; i++) {
-      console.log(arr[i])
-      const appartment = parseAppartmentData(arr[i])
+    const reg = /window\.\_\_NUXT\_\_\=\(function\([^)]+\)\{return\s(\{[\w\W]+?routePath\:\w+\}\})/g
+    var match = reg.exec(txt)
+    if (match == null) return null
+    match = /feed:(\{[\w\W]+\})(?=,search:)/.exec(match[1])
+    if (match == null) return null
+    const jsonTxt = match[1].replace(/([,{}}\]])(\w+?)(?=:)/g,"$1\"$2\"")
+                            .replace(/:([^[{}":]+?)(?=[,}])/g, ":\"$1\"")
+                            .replace(/\[[^\[\]]+?\]/g, "[]")
+    
+    const data = JSON.parse(jsonTxt)
+    for(var i = 0 ; i < data.items.length ; i++) {
+      console.log(data.items[i])
+      const appartment = parseAppartmentData(data.items[i].data)
       if (appartment == null) continue
       aDataTbl.push(appartment)
     }
@@ -62,39 +72,33 @@ const getDataTbl = txt => {
     return aDataTbl
 }
 
-const parseAppartmentData = txt => {
-  if (txt.indexOf('סאבלט') != -1) return null
+const floorDic = {
+  "קומת קרקע": 0,
+  "aV": 1,
+  "aI": 2,
+  "P": 3
+}
 
-  const priceReg = /\<div[^>]+?class="price"\>[\w\W\s]+?(.*)((?!\<\/div\>)[\w\W\s])+(?=\<\/div\>)/
-  const sqMrReg = /\<span id="data_SquareMeter_[\w\W\s]+class="val"\>(\d+)(?=\s*\<\/span\>)/
-  const floorReg = /\<span id="data_floor_\d+" class="val"\>(\d+|[א-ת]{4})(?=\<\/span\>)/
-  const roomsReg = /\<span id="data_rooms_\d+" class="val"\>(\d+(\.\d+){0,1})(?=\<\/span\>)/
-  const addressReg = /\<span class="title"\>\s*([^<]+)(?=\s*\<\/span\>)/
-  const adNoReg = /\<span [\w\W]+? class="num_ad"\>מספר מודעה: (\d+)\<\/span\>/
-  const dateReg = /\<span [\w\W]+? class="date"\>(\d{2}\/\d{2}\/\d{4})\<\/span\>/
-  if (txt.match(roomsReg) == null) return null
-  if (txt.match(sqMrReg) == null) return null
+const parseAppartmentData = itemData => {
+  if (/סאבלט|חניה/.test(itemData.row_2)) return null
+  if (!/[א-ת]/.test(itemData.row_1)) return null
 
-  var pricePart = txt.match(priceReg)[1]
-  const sqMrPart = txt.match(sqMrReg)[1]
-  const floorPart = txt.match(floorReg)[1]
-  const roomPart = txt.match(roomsReg)[1]
-  const addressPart = txt.match(addressReg)[1]
-  const adNo = txt.match(adNoReg)[1]
-  const date = Date.parse(txt.match(dateReg)[1].replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'))
-
-  pricePart = pricePart.match(/\d+(,\d{3})*/)
-  if (pricePart == null) return null
-  pricePart = pricePart[0]
+  const pricePart = itemData.price.replace(/[^\d]/g, '')
+  const sqMrPart = (/^[\d\.]+$/g.test(itemData.square_meters) ? itemData.square_meters : itemData.line_3.replace(/[^\d]/g, ''))
+  const floorPart = floorDic[itemData.line_2]
+  const roomPart = itemData.line_1.replace(/[^\d\.]/g, '')
+  const addressPart = itemData.row_1
+  const ad_numberPart = itemData.ad_number
+  const updated_atPart = (itemData.updated_at == 'עודכן היום' ?  new Date(new Date().toISOString().replace(/(.+)T.+$/g, '$1')) : new Date(itemData.updated_at.replace(/[^\d\/]+/g, '').replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')))
 
   const ret = {
-    adNo: Number(adNo),
-    date: date,
-    price: Number(pricePart.replace(',', '')),
+    ad_number: ad_numberPart,
+    updated_at: updated_atPart,
+    price: Number(pricePart),
     sqMr: Number(sqMrPart),
     floor: floorPart,
     room: Number(roomPart),
-    address: addressPart.replace(/\s+$/, '')
+    address: addressPart
   }
 
   return ret
