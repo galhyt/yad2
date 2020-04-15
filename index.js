@@ -123,36 +123,43 @@ exportJson = data => {
   })
 }
 
-const addToDb = data => {
-  MongoClient.connect(url, {poolSize: 100,bufferMaxEntries: 0, reconnectTries: 5000, useNewUrlParser: true}, function(err, db) {
+function addToDb(data) {
+  MongoClient.connect(url, {poolSize: 100,bufferMaxEntries: 0, reconnectTries: 5000, useNewUrlParser: true, useUnifiedTopology: true}, async function(err, db) {
     if (err) throw err;
     var dbo = db.db("yad2");
     
-    // dbo.collection("appartments").insertMany(data, function(err, res) {
-    //   if (err) throw err;
-    //   console.log("Number of documents inserted: " + res.insertedCount);
-    //   db.close();
-    // });
-
+    var promises = []
     data.forEach(el => {
       var cur = dbo.collection("appartments").find({'ad_number': el.ad_number})
-      cur.hasNext(has => {
-        if (!has) {
-          dbo.collection("appartments").insertOne(el, function(err, res) {
-
-          })
-        }
-        else {
-          cur.next(doc => {
-            if (doc.price.find(p => p.date == el.price[0].date) == 'undefined') {
-              doc.price.push(el.price[0])
-              dbo.collection("appartments").update({_id: el._id}, {$set: {price: doc.price}})
-            }
-          })
-        }
-      })
+      
+      promises.push(new Promise((resolve,reject)=> {
+        cur.hasNext(has => {
+          if (!has) {
+            promises.push(new Promise((resolve1,reject1)=> {
+              dbo.collection("appartments").insertOne(el, function(err, res) {
+                if (!err) resolve1(); else reject1(new Error(err.message))
+              })
+            }));
+          }
+          else {
+            promises.push(new Promise((resolve1,reject1)=> {
+              cur.next(doc => {
+                if (doc.price.find(p => p.date == el.price[0].date) == 'undefined') {
+                  doc.price.push(el.price[0])
+                  dbo.collection("appartments").update({_id: el._id}, {$set: {price: doc.price}}, () => {
+                    resolve1()
+                  })
+                }
+              })
+            }));
+          }
+          resolve()
+        })
+      }))
     });
-    //db.close();
+
+    let aw = await Promise.all(promises)
+    db.close();
   });
 }
 
