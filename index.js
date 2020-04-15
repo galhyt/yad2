@@ -42,7 +42,8 @@ const main = () => {
     }
   };
     // request('https://www.yad2.co.il/realestate/rent?city=6300&street=0101', options,  (err, res, body) => {
-    // if (err) { return console.log(err); }
+    //   if (err) { return console.log(err); }
+      
     //   const data = getDataTbl(body)
     //   if (data == null) return console.log('Error finding data!')
     //   console.log("%s no of records %d", new Date().toString(), data.length)
@@ -104,7 +105,7 @@ const parseAppartmentData = itemData => {
   const ret = {
     ad_number: ad_numberPart,
     updated_at: updated_atPart,
-    price: {date: updated_atPart, value: Number(pricePart)},
+    price: [{date: updated_atPart, value: Number(pricePart)}],
     sqMr: Number(sqMrPart),
     floor: floorPart,
     room: Number(roomPart),
@@ -123,15 +124,35 @@ exportJson = data => {
 }
 
 const addToDb = data => {
-  MongoClient.connect(url, function(err, db) {
+  MongoClient.connect(url, {poolSize: 100,bufferMaxEntries: 0, reconnectTries: 5000, useNewUrlParser: true}, function(err, db) {
     if (err) throw err;
     var dbo = db.db("yad2");
     
-    dbo.collection("appartments").insertMany(data, function(err, res) {
-      if (err) throw err;
-      console.log("Number of documents inserted: " + res.insertedCount);
-      db.close();
+    // dbo.collection("appartments").insertMany(data, function(err, res) {
+    //   if (err) throw err;
+    //   console.log("Number of documents inserted: " + res.insertedCount);
+    //   db.close();
+    // });
+
+    data.forEach(el => {
+      var cur = dbo.collection("appartments").find({ad_number: el.ad_number})
+      cur.hasNext(has => {
+        if (!has) {
+          dbo.collection("appartments").insertOne(el, function(err, res) {
+
+          })
+        }
+        else {
+          cur.next(doc => {
+            if (doc.price.find(p => p.date == el.price[0].date) == 'undefined') {
+              doc.price.push(el.price[0])
+              dbo.collection("appartments").update({_id: el._id}, {$set: {price: doc.price}})
+            }
+          })
+        }
+      })
     });
+    //db.close();
   });
 }
 
