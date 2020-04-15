@@ -135,7 +135,7 @@ const addToDb = data => {
     // });
 
     data.forEach(el => {
-      var cur = dbo.collection("appartments").find({ad_number: el.ad_number})
+      var cur = dbo.collection("appartments").find({'ad_number': el.ad_number})
       cur.hasNext(has => {
         if (!has) {
           dbo.collection("appartments").insertOne(el, function(err, res) {
