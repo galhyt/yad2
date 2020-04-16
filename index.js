@@ -130,29 +130,28 @@ function addToDb(data) {
     
     var promises = []
     data.forEach(el => {
-      var cur = dbo.collection("appartments").find({'ad_number': el.ad_number})
-      
-      promises.push(new Promise((resolve,reject)=> {
-        cur.hasNext(has => {
-          if (!has) {
-            promises.push(new Promise((resolve1,reject1)=> {
-              dbo.collection("appartments").insertOne(el, function(err, res) {
-                if (!err) resolve1(); else reject1(new Error(err.message))
-              })
-            }));
-          }
-          else {
-            promises.push(new Promise((resolve1,reject1)=> {
-              cur.next(doc => {
-                if (doc.price.find(p => p.date == el.price[0].date) == 'undefined') {
-                  doc.price.push(el.price[0])
+      promises.push(new Promise((resolve, reject) => {
+        dbo.collection("appartments").findOne({'ad_number': el.ad_number}, (err, doc) => {
+          promises.push(new Promise((resolve1, reject1) => {
+            if (!doc) {
+              promises.push(new Promise((resolve2,reject2)=> {
+                dbo.collection("appartments").insertOne(el, function(err, res) {
+                  if (!err) resolve2(); else reject2(new Error(err.message))
+                })
+              }));
+            }
+            else {
+              if (doc.price.find(p => {return p.date == el.price[0].date}) == 'undefined') {
+                doc.price.push(el.price[0])
+                promises.push(new Promise((resolve2,reject2)=> {
                   dbo.collection("appartments").update({_id: el._id}, {$set: {price: doc.price}}, () => {
-                    resolve1()
+                    resolve2()
                   })
-                }
-              })
-            }));
-          }
+                }))
+              }
+            }
+            resolve1()
+          }))
           resolve()
         })
       }))
