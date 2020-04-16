@@ -41,24 +41,24 @@ const main = () => {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
     }
   };
-    // request('https://www.yad2.co.il/realestate/rent?city=6300&street=0101', options,  (err, res, body) => {
-    //   if (err) { return console.log(err); }
+    request('https://www.yad2.co.il/realestate/rent?city=5000&neighborhood=485&page=3', options,  (err, res, body) => {
+      if (err) { return console.log(err); }
       
-    //   const data = getDataTbl(body)
-    //   if (data == null) return console.log('Error finding data!')
-    //   console.log("%s no of records %d", new Date().toString(), data.length)
-    //   exportJson(data)
-    //   addToDb(data)
-    // });
-    fs.readFile("C:\\Users\\User\\Desktop\\yad2.html", function(err, body) {
-      if (err) throw(err)
-
       const data = getDataTbl(body)
       if (data == null) return console.log('Error finding data!')
       console.log("%s no of records %d", new Date().toString(), data.length)
-      //exportJson(data)
       addToDb(data)
-    })
+      exportJson(data)
+    });
+    // fs.readFile("C:\\Projects\\Yad2\\data\\new_north.html", function(err, body) {
+    //   if (err) throw(err)
+
+    //   const data = getDataTbl(body)
+    //   if (data == null) return console.log('Error finding data!')
+    //   console.log("%s no of records %d", new Date().toString(), data.length)
+    //   //exportJson(data)
+    //   addToDb(data)
+    // })
 }
 
 const getDataTbl = txt => {
@@ -68,10 +68,11 @@ const getDataTbl = txt => {
     if (match == null) return null
     match = /feed:(\{[\w\W]+\})(?=,search:)/.exec(match[1])
     if (match == null) return null
-    const jsonTxt = match[1].replace(/([,{}}\]])(\w+?)(?=:)/g,"$1\"$2\"")
-                            .replace(/:([^[{}":]+?)(?=[,}])/g, ":\"$1\"")
+    const jsonTxt = match[1].replace(/(?<=[,{}}\]])(\w+?)(?=:)/g,"\"$1\"")
+                            .replace(/(?<!"[^"]+):([^[{}":]+?)(?=[,}])/g, ":\"$1\"")
                             .replace(/\[[^\[\]]+?\]/g, "[]")
-    
+                            .replace(/(?<=:"[^"]+[^\\])"(?!\}*,"\w+":)/g, "\\\"")
+
     const data = JSON.parse(jsonTxt)
     for(var i = 0 ; i < data.items.length ; i++) {
       console.log(data.items[i])
@@ -101,6 +102,9 @@ const parseAppartmentData = itemData => {
   const addressPart = itemData.row_1
   const ad_numberPart = itemData.ad_number
   const updated_atPart = (itemData.updated_at == 'עודכן היום' ?  new Date(new Date().toISOString().replace(/(.+)T.+$/g, '$1')) : new Date(itemData.updated_at.replace(/[^\d\/]+/g, '').replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')))
+  const refurbished = (itemData.Meshupatz_text == 'k' ? false : true)
+  const city = itemData.row_2.match(/[א-ת\s]+$/)[0]
+  const neighborhood = itemData.row_2.match(/([א-ת\s]+)(?=,\s[א-ת\s]+$)/)[0]
 
   const ret = {
     ad_number: ad_numberPart,
@@ -109,7 +113,10 @@ const parseAppartmentData = itemData => {
     sqMr: Number(sqMrPart),
     floor: floorPart,
     room: Number(roomPart),
-    address: addressPart
+    address: addressPart,
+    city: city.trim(),
+    neighborhood: neighborhood.trim(),
+    refurbished: refurbished
   }
 
   return ret
@@ -118,7 +125,7 @@ const parseAppartmentData = itemData => {
 exportJson = data => {
   const now = new Date()
   const fileName = now.getFullYear() + '_' + (now.getMonth()+1) + '_' + now.getDate()
-  fs.writeFile("data/" + fileName + ".json", JSON.stringify(data), err => {
+  fs.appendFile("data/" + fileName + ".json", JSON.stringify(data), err => {
     if (err != null) throw err
   })
 }
