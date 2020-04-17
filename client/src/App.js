@@ -28,29 +28,31 @@ import FilterForm from './FilterForm'
 //     return <FilterForm neighborhoodValues={neighborhoodValues} />
 //   }
 // }
-const testMsg = () => {
+const testMsg = async () => {
   let result
   
-  fetch('localhost:3001/api').then(res=> {
-    result = res
-  }
-    )
+  await new Promise((resolve, reject) => {
+    fetch('/api').then(res=> {
+      resolve(res.json())
+    })
+  }).then(res => result = res)
 
   return result
 }
+
 class App extends React.Component {
   state = {
     msg: ""
   }
 
-  constructor(props) {
-    super(props)
-    this.state.msg = testMsg()
+  async componentDidMount() {
+    const msg = await testMsg()
+    this.setState({msg : msg})
   }
 
   render() {
     const {msg} = this.state
-    return msg
+    return (JSON.stringify(msg))
   }
 }
 
