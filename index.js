@@ -10,7 +10,7 @@ var dbConnection = "mongodb://localhost:27017/";
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const citiesCodes = [/*6300,5000,*/7400]
+const citiesCodes = [6300,5000,7400,8300]
 const setTimer = true
 const options = {
   'gzip': true,
@@ -89,11 +89,11 @@ const doRequest = async (city, page) => {
     request(url, options, (err, res, body) => {
       if (err) {
         console.log(err);
-        reject(new Error(err.message))
+        return reject(new Error(err.message))
       }
       const data = getDataTbl(body);
       if (data == null)
-        reject(new Error('Error finding data!'));
+        return reject(new Error('Error finding data!'));
 
       console.log("%s no of records %d", new Date().toString(), data.length);
       addToDb(data);
