@@ -1,16 +1,16 @@
-//const express = require('express');
-//const bodyParser = require('body-parser');
-//const pino = require('express-pino-logger')();
-import Yad2DL from './Yad2/dl'
+const express = require('express');
+const bodyParser = require('body-parser');
+const pino = require('express-pino-logger')();
+var Yad2DL = require('./dl')
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 
-app.get('/api', (req, res) => {
+app.get('/api', async (req, res) => {
   const values = await getDistinctValues('neighborhood')
   res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify({'values': values}))
+  res.send(JSON.stringify(values))
 });
 
 app.listen(3001, () =>
@@ -19,7 +19,7 @@ app.listen(3001, () =>
 
 const getDistinctValues = async (fieldName) => {
   let values
-  new Promise((resolve,reject) => {
+  await new Promise((resolve,reject) => {
     Yad2DL.getDistinct(fieldName, values => {
         resolve(values)
     })

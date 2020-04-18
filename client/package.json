@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node-env-run server --exec nodemon",
+    "server": "node-env-run ../api.js --exec nodemon",
     "dev": "run-p server start"
   },
   "eslintConfig": {

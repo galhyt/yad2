@@ -5,8 +5,8 @@ Yad2DL.connect((dbo) => {
         {$unwind: "$price"},
         {
             $match: {
-                "updated_at": {$gt: new Date("2020-04-01")}
-                , "room": {$gt: 2, $lt: 4}
+                "updated_at": {$gt: new Date("2020-04-15")}
+                , "room": {$ne: 0, $eq: 3}
                 //, "refurbished": false
                 //,neighborhood: "יד אליהו"
                 ,sqMr: {$ne: 0}
@@ -18,6 +18,7 @@ Yad2DL.connect((dbo) => {
                 _id: "$ad_number",
                 city: {$last: "$city"},
                 sqMr: {$last: "$sqMr"},
+                room: {$last: "$room"},
                 lastPrice: {$last: "$price.value"}
             }
         },
@@ -25,6 +26,7 @@ Yad2DL.connect((dbo) => {
             $group:  {
                 _id: "$city",
                 avgSqmr: {$avg: {$divide: ["$lastPrice","$sqMr"]}},
+                avgPerRoom: {$avg: {$divide: ["$lastPrice", "$room"]}},
                 count: {$sum: 1}
             }
         }
@@ -39,7 +41,7 @@ Yad2DL.connect((dbo) => {
         
     ]).toArray(function(err, results) {
         const arr = results.map(el=>{
-            return el._id + ":" + el.avgSqmr.toFixed(0) + " מתוך דגימה=" + el.count
+            return el._id + ": Per SqmMr=" + el.avgSqmr.toFixed(0) + "; Per Room=" + el.avgPerRoom + "; out of=" + el.count
         })
         console.log(JSON.stringify(arr));
         //console.log(JSON.stringify(results));
