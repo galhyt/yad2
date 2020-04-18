@@ -7,8 +7,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 
-app.get('/api', async (req, res) => {
-  const values = await getDistinctValues('neighborhood')
+app.get('/api/fieldvalues/:fieldname', async (req, res) => {
+  const values = await getDistinctValues(req.params.fieldname)
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(values))
 });

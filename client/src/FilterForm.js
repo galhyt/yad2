@@ -14,7 +14,13 @@ const Dropdown = props => {
 class FilterForm extends Component {
     render() {
         const {neighborhoodValues} = this.props
-        return <Dropdown values={neighborhoodValues} id="neighborhhod" />
+        const {cityValues} = this.props
+        return (
+            <div>
+                <Dropdown values={cityValues} id="city" />
+                <Dropdown values={neighborhoodValues} id="neighborhhod" />
+            </div>
+        )
     }
 }
 

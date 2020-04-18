@@ -6,7 +6,7 @@ const getDistinctValues = async fieldName => {
   let result
   
   await new Promise((resolve, reject) => {
-    fetch('/api').then(res=> {
+    fetch('/api/fieldvalues/'+fieldName).then(res=> {
       resolve(res.json())
     })
   }).then(res => result = res)
@@ -16,18 +16,31 @@ const getDistinctValues = async fieldName => {
 
 class App extends React.Component {
   state = {
-    neighborhoodValues: []
+    neighborhood: [],
+    city: []
   }
 
   async componentDidMount() {
-    await getDistinctValues("neighborhood").then(neighborhoodValues => {
-      this.setState({neighborhoodValues: neighborhoodValues})
-    })
+    var promises = []
+    var newstate = { "neighborhood" : null, "city" : null }
+
+    for (var fieldname in newstate) {
+      promises.push(new Promise((resolve,reject) => {
+        var key = fieldname
+        getDistinctValues(fieldname).then(vals => {
+          resolve({key: key, vals: vals})
+        })}).then(args => newstate[args.key] = ["- All -"].concat(args.vals))
+      )
+    }
+
+    await Promise.all(promises)
+    this.setState(newstate)
   }
 
   render() {
-    const {neighborhoodValues} = this.state
-    return <FilterForm neighborhoodValues={neighborhoodValues} />
+    const {neighborhood} = this.state
+    const {city} = this.state
+    return <FilterForm neighborhoodValues={neighborhood} cityValues={city} />
   }
 }
 
