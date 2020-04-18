@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 
 const Dropdown = props => {
-    const {values} = this.props
-    const {id} = this.props
+    const {values} = props
+    const {id} = props
 
     const options = values.map((val, i) => {
         return <option value="{val}">{val}</option>

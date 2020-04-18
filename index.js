@@ -56,9 +56,15 @@ const doScheduledTask = async (indx, page, iteration) => {
   if (typeof(indx) == 'undefined') indx = 0
   if (typeof(iteration) == 'undefined') iteration = 1
 
+  let len
   try {
-    let len = await doRequest(citiesCodes[indx], page)
-    console.log('iteration=%s,city=%s,page=%s,no of records=%s', iteration, citiesCodes[indx], page, len)
+    len = await doRequest(citiesCodes[indx], page)
+  }
+  catch (err) {
+      console.log(err.message)
+  }
+  finally {
+    console.log('iteration=%s,city=%s,page=%s,no of records=%s,date=%s', iteration, citiesCodes[indx], page, len, Date.now())
 
     if (len < 15) {
       indx++;
@@ -72,17 +78,17 @@ const doScheduledTask = async (indx, page, iteration) => {
     }
 
     if (indx < citiesCodes.length) {
-        var millisecs = 30000
-        if (iteration % 10 == 0) millisecs *= 4;
-        iteration++
+      var millisecs = Math.floor(
+        Math.random() * 30000 + 30000
+      )
 
-        setTimeout(() => {
-          doScheduledTask(indx, page, iteration)
-        }, millisecs);
+      if (iteration % 10 == 0) millisecs *= 4;
+      iteration++
+
+      setTimeout(() => {
+        doScheduledTask(indx, page, iteration)
+      }, millisecs);
     }
-  }
-  catch (err) {
-      throw err
   }
 }
 
