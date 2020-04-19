@@ -6,7 +6,7 @@ Yad2DL.connect((dbo) => {
         {
             $match: {
                 "updated_at": {$gt: new Date("2020-04-15")}
-                , "room": {$ne: 0, $eq: 3}
+                , "room": {$ne: 0, $lt: 3}
                 //, "refurbished": false
                 //,neighborhood: "יד אליהו"
                 ,sqMr: {$ne: 0}

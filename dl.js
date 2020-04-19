@@ -31,6 +31,54 @@ class Yad2DL {
         }).then(result => callback(result))
     }
 
+    static matchAttrib(attribs) {
+        var filterAttrib =  {}
+
+        attribs.split(',').forEach(el => {
+            var arr = el.split(':')
+            filterAttrib[arr[0]] = arr[1]
+        });
+
+        return {
+            filterAttrib
+        }
+    }
+
+    static getResult(query, callback) {
+        new Promise((resolve, reject) => {
+            var match = {}
+            for (var fieldName in query) {
+                match[fieldName] = Yad2DL.matchAttrib(query[fieldName])
+            }
+            this.connect(dbo => {
+                dbo.collection("appartments").aggregate([
+                    {$unwind: "$price"},
+                    {
+                        $match: match
+                    },
+                    {
+                        $group: {
+                            _id: "$ad_number",
+                            city: {$last: "$city"},
+                            sqMr: {$last: "$sqMr"},
+                            room: {$last: "$room"},
+                            lastPrice: {$last: "$price.value"}
+                        }
+                    },
+                    {
+                        $group:  {
+                            _id: "$city",
+                            avgSqmr: {$avg: {$divide: ["$lastPrice","$sqMr"]}},
+                            avgPerRoom: {$avg: {$divide: ["$lastPrice", "$room"]}},
+                            count: {$sum: 1}
+                        }
+                    }
+                    ]).toArray(function(err, results) {
+                        resolve(results.map(el => el._id))
+                })
+            })
+        }).then(result => callback(result))
+    }
 }
 
 module.exports = Yad2DL;

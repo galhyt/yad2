@@ -15,32 +15,41 @@ const getDistinctValues = async fieldName => {
 }
 
 class App extends React.Component {
-  state = {
-    neighborhood: [],
-    city: []
+  initializeState = {
+    neighborhood: ["- All -"],
+    city: ["- All -"],
+    result: []
   }
+
+  state = this.initializeState
 
   async componentDidMount() {
     var promises = []
-    var newstate = { "neighborhood" : null, "city" : null }
+    var newstate = this.initializeState
+    const fieldsNames = ['city']
 
-    for (var fieldname in newstate) {
+    fieldsNames.forEach(fieldname => {
       promises.push(new Promise((resolve,reject) => {
         var key = fieldname
         getDistinctValues(fieldname).then(vals => {
           resolve({key: key, vals: vals})
-        })}).then(args => newstate[args.key] = ["- All -"].concat(args.vals))
+        })}).then(args => newstate[args.key] = newstate[args.key].concat(args.vals))
       )
-    }
+    })
 
     await Promise.all(promises)
     this.setState(newstate)
   }
 
+  submitForm() {
+    var newState = this.state
+    newstate.result = [{}]
+  }
+
   render() {
     const {neighborhood} = this.state
     const {city} = this.state
-    return <FilterForm neighborhoodValues={neighborhood} cityValues={city} />
+    return <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm} />
   }
 }
 

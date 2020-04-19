@@ -10,8 +10,19 @@ var dbConnection = "mongodb://localhost:27017/";
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const citiesCodes = [6300,5000,7400,8300]
+var citiesCodes = [6300,5000,7400,8300,8400]
 const setTimer = true
+// try to get cities codes from cmd
+if (process.argv.length > 2) {
+  const argvCodes = process.argv.slice(2)
+  argvCodes.forEach(code => {
+    if (!/\d+/.test(code))
+      throw new Error(code + ' is not a legal city code')
+  })
+
+  citiesCodes = argvCodes
+}
+
 const options = {
   'gzip': true,
   headers: {
@@ -64,7 +75,7 @@ const doScheduledTask = async (indx, page, iteration) => {
       console.log(err.message)
   }
   finally {
-    console.log('iteration=%s,city=%s,page=%s,no of records=%s,date=%s', iteration, citiesCodes[indx], page, len, Date.now())
+    console.log('iteration=%s,city=%s,page=%s,no of records=%s,date=%s', iteration, citiesCodes[indx], page, len, new Date())
 
     if (len < 15) {
       indx++;

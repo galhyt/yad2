@@ -5,7 +5,7 @@ const Dropdown = props => {
     const {id} = props
 
     const options = values.map((val, i) => {
-        return <option value="{val}">{val}</option>
+        return <option value="{val}" key="{i}">{val}</option>
     })
 
     return <select id={id} name={id}>{options}</select>
@@ -15,10 +15,12 @@ class FilterForm extends Component {
     render() {
         const {neighborhoodValues} = this.props
         const {cityValues} = this.props
+        const {submitForm} = this.props
         return (
-            <div>
-                <Dropdown values={cityValues} id="city" />
-                <Dropdown values={neighborhoodValues} id="neighborhhod" />
+            <div className="FilterForm">
+                <div>City: <Dropdown values={cityValues} id="city" /></div>
+                <div>Neighborhood: <Dropdown values={neighborhoodValues} id="neighborhhod" /></div>
+                <button onClick={submitForm}>Submit</button>
             </div>
         )
     }
