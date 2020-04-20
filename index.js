@@ -117,7 +117,7 @@ const doRequest = async (city, page) => {
       if (data == null)
         return reject(new Error('Error finding data!'));
 
-      console.log("%s no of records %d", new Date().toString(), data.length);
+      //console.log("%s no of records %d", new Date().toString(), data.length);
       addToDb(data);
       exportJson(data);
 
@@ -142,7 +142,7 @@ const getDataTbl = txt => {
 
     const data = JSON.parse(jsonTxt)
     for(var i = 0 ; i < data.items.length ; i++) {
-      console.log(data.items[i])
+      //console.log(data.items[i])
       const appartment = parseAppartmentData(data.items[i].data)
       if (appartment == null) continue
       aDataTbl.push(appartment)

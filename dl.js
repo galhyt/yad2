@@ -32,16 +32,9 @@ class Yad2DL {
     }
 
     static matchAttrib(attribs) {
-        var filterAttrib =  {}
+        var filterAttrib =  '{'+ attribs.replace(/(\$\w{2})(?=:)/g, "\"$1\"") +'}'
 
-        attribs.split(',').forEach(el => {
-            var arr = el.split(':')
-            filterAttrib[arr[0]] = arr[1]
-        });
-
-        return {
-            filterAttrib
-        }
+        return JSON.parse(filterAttrib)
     }
 
     static getResult(query, callback) {
@@ -74,7 +67,7 @@ class Yad2DL {
                         }
                     }
                     ]).toArray(function(err, results) {
-                        resolve(results.map(el => el._id))
+                        resolve(results)
                 })
             })
         }).then(result => callback(result))
