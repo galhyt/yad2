@@ -1,25 +1,31 @@
 import React, { Component } from 'react'
 
-const Dropdown = props => {
-    const {values} = props
-    const {id} = props
+class Dropdown extends Component {
+    id = null
+    
+    handleChange(e) {
+        this.props.onFilterFieldChange(this.id, e.target.value)
+    }
 
-    const options = values.map((val, i) => {
-        return <option value="{val}" key="{i}">{val}</option>
-    })
-
-    return <select id={id} name={id}>{options}</select>
+    render() {
+        const {values} = this.props
+        const {id} = this.props
+        this.id = id
+        const options = values.map((val, i) => {
+            return <option value={val} key={i}>{val}</option>
+        })
+        
+        return <select id={id} name={id} onChange={this.handleChange.bind(this)}>{options}</select>
+    }
 }
 
 class FilterForm extends Component {
     render() {
-        const {neighborhoodValues} = this.props
-        const {cityValues} = this.props
-        const {submitForm} = this.props
+        const {neighborhoodValues,cityValues,submitForm,onFilterFieldChange} = this.props
         return (
             <div className="FilterForm">
-                <div>City: <Dropdown values={cityValues} id="city" /></div>
-                <div>Neighborhood: <Dropdown values={neighborhoodValues} id="neighborhhod" /></div>
+                <div>City: <Dropdown values={cityValues} id="city" onFilterFieldChange={onFilterFieldChange} /></div>
+                <div>Neighborhood: <Dropdown values={neighborhoodValues} id="neighborhhod" onFilterFieldChange={onFilterFieldChange} /></div>
                 <button onClick={submitForm}>Submit</button>
             </div>
         )

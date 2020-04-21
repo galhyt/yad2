@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import './FilterForm.css';
 import FilterForm from './FilterForm'
 
 const getDistinctValues = async fieldName => {
@@ -18,6 +19,8 @@ class App extends React.Component {
   initializeState = {
     neighborhood: ["- All -"],
     city: ["- All -"],
+    neighborhoodValue: null,
+    cityValue: null,
     result: []
   }
 
@@ -41,15 +44,45 @@ class App extends React.Component {
     this.setState(newstate)
   }
 
-  submitForm() {
+  async getResult() {
+    let result
+    const query = 'city=$eq:"'+this.state.cityValue+'"&sqMr=$ne:0&room=$ne:0'
+    await new Promise((resolve, reject) => {
+      fetch('/api/filter?'+query).then(res=> {
+        resolve(res.json())
+      })
+    }).then(res => result = res)
+  
+    return result
+  }
+  
+  onFilterFieldChange(id, value) {
     var newState = this.state
-    newstate.result = [{}]
+    newState[id+'Value'] = value
+    this.setState(newState)
+  }
+
+  async submitForm() {
+    var newState = this.state
+    newState.result = await this.getResult()
+    this.setState(newState)
   }
 
   render() {
     const {neighborhood} = this.state
     const {city} = this.state
-    return <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm} />
+    const {result} = this.state
+    try {
+      return (
+        <div>
+        <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} />
+        <div>{JSON.stringify(result)}</div>
+        </div>
+      )
+    }
+    catch(e) {
+
+    }
   }
 }
 
