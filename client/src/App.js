@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import './FilterForm.css';
 import FilterForm from './FilterForm'
+import Table from "./Table"
 
 const getDistinctValues = async (fieldName, query) => {
   let result
@@ -84,7 +85,7 @@ class App extends React.Component {
       return (
         <div>
         <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} />
-        <div>{JSON.stringify(result)}</div>
+        <Table type="city" data={result} />
         </div>
       )
     }

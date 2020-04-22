@@ -13,7 +13,7 @@ app.get('/api/fieldvalues/:fieldname', async (req, res) => {
     return val != null
   })
   
-  console.log(values)
+  console.log(JSON.stringify(values))
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(values))
 });
