@@ -87,7 +87,7 @@ class App extends React.Component {
 
     ReactDOM.render(
       <React.StrictMode>
-        <Table type={childType} data={data} drillDown={this.drillDown.bind(this)} />
+        <Table type={childType} data={data} drillDown={this.drillDown.bind(this)}  />
       </React.StrictMode>,
       document.getElementById(resultTableId)
     );

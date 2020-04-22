@@ -2,22 +2,22 @@
     cursor: pointer;
 }
 
-.drillDown::after {
+.drillDown.open::after {
     content: "+";
 }
 
-.drilldownTable {
-    margin-left: 2em;
+.drillDown.close::after {
+    content: "-";
 }
 
-table {
+table.city {
     border-style: solid;
 }
 
-table tr th,table tr:not(:last-of-type) td {
+table.city > thead tr th,table.city > tbody tr:not(:last-of-type) td {
     border-bottom-style: solid;
 }
 
-table tr th:not(:last-of-type),table tr td:not(:last-of-type) {
+table.city > thead tr th:not(:last-of-type),table.city > tbody tr td:not(:last-of-type) {
     border-right-style: solid;
 }
