@@ -6,6 +6,7 @@ const TableHeader = (props) => {
     return (
         <thead>
             <tr>
+                <th></th>
                 <th>{type}</th>
                 <th>Average Per Sq. Mr.</th>
                 <th>Average Per Room</th>
@@ -27,14 +28,27 @@ const TableBody = (props) => {
     let child = drillDic[type]
     const rows = data.map((el, indx) => {
         if (child != null) {
-            const id = child + "_" + indx
+            const id = type + "_" + el._id + "_" + child + "_" + indx
             return (
-                <tr key={indx}>
-                    <td onClick={drillDown.bind(this, type, el._id, child, id)}><div className="drillDown"></div><div className="drilldownTable" id={id}></div></td>
-                    <td>{el._id}</td>
-                    <td>{el.avgSqmr.toFixed(2)}</td>
-                    <td>{el.avgPerRoom.toFixed(2)}</td>
-                    <td>{el.count}</td>
+                <tr key={"key_"+id}>
+                    <td colSpan="5">
+                        <table style={{width:"100%"}}>
+                            <tbody>
+                                <tr>
+                                    <td onClick={drillDown.bind(this, type, el._id, child, id)} className="drillDown"></td>
+                                    <td>{el._id}</td>
+                                    <td>{el.avgSqmr.toFixed(2)}</td>
+                                    <td>{el.avgPerRoom.toFixed(2)}</td>
+                                    <td>{el.count}</td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="5">
+                                        <div className="drilldownTable" id={id}></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
             )
         }

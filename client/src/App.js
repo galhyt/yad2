@@ -70,10 +70,10 @@ class App extends React.Component {
   async submitForm() {
     var newState = this.state
     var query = 'sqMr=$ne:0&room=$ne:0'
-    if (this.state.cityValue != null) {
+    if (this.state.cityValue != null && this.state.cityValue != '- All -') {
       query += '&city=$eq:"'+this.state.cityValue +'"'
     }
-    if (this.state.neighborhoodValue != null) {
+    if (this.state.neighborhoodValue != null && this.state.neighborhoodValue != '- All -') {
       query += '&neighborhood=$eq:"' + this.state.neighborhoodValue + '"'
     }
     newState.result = await this.getResult('city', query)
