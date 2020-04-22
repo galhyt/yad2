@@ -15,10 +15,16 @@ class Yad2DL {
         })
     }
 
-    static getDistinct(fieldName, callback) {
+    static getDistinct(fieldName, callback, query) {
         new Promise((resolve, reject) => {
+            var match = null
+            if (query != null) match = Yad2DL.getMatch(query)
+
             this.connect(dbo => {
                 dbo.collection("appartments").aggregate([
+                    {
+                        $match : match
+                    },
                     {
                         $group: {
                             _id: "$"+fieldName
@@ -37,12 +43,17 @@ class Yad2DL {
         return JSON.parse(filterAttrib)
     }
 
+    static getMatch(query) {
+        var match = {}
+        for (var fieldName in query) {
+            match[fieldName] = Yad2DL.matchAttrib(query[fieldName])
+        }
+        return match
+    }
+
     static getResult(query, callback) {
         new Promise((resolve, reject) => {
-            var match = {}
-            for (var fieldName in query) {
-                match[fieldName] = Yad2DL.matchAttrib(query[fieldName])
-            }
+            var match = Yad2DL.getMatch(query)
             this.connect(dbo => {
                 dbo.collection("appartments").aggregate([
                     {$unwind: "$price"},

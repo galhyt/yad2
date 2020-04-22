@@ -3,11 +3,13 @@ import './App.css';
 import './FilterForm.css';
 import FilterForm from './FilterForm'
 
-const getDistinctValues = async fieldName => {
+const getDistinctValues = async (fieldName, query) => {
   let result
   
   await new Promise((resolve, reject) => {
-    fetch('/api/fieldvalues/'+fieldName).then(res=> {
+    var url = '/api/fieldvalues/'+fieldName
+    if (query != null) url += '?' + query
+    fetch(url).then(res=> {
       resolve(res.json())
     })
   }).then(res => result = res)
@@ -46,7 +48,10 @@ class App extends React.Component {
 
   async getResult() {
     let result
-    const query = 'city=$eq:"'+this.state.cityValue+'"&sqMr=$ne:0&room=$ne:0'
+    var query = 'city=$eq:"'+this.state.cityValue+'"&sqMr=$ne:0&room=$ne:0'
+    if (this.state.neighborhoodValue != null) {
+      query += '&neighborhood=$eq:"' + this.state.neighborhoodValue + '"'
+    }
     await new Promise((resolve, reject) => {
       fetch('/api/filter?'+query).then(res=> {
         resolve(res.json())
@@ -56,9 +61,12 @@ class App extends React.Component {
     return result
   }
   
-  onFilterFieldChange(id, value) {
+  async onFilterFieldChange(id, value) {
     var newState = this.state
     newState[id+'Value'] = value
+    if (id === 'city')
+      newState.neighborhoodValues = await getDistinctValues('neighborhood', 'city=$eq:"'+value+'"')
+
     this.setState(newState)
   }
 
