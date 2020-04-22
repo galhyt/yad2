@@ -18,8 +18,8 @@ app.get('/api/fieldvalues/:fieldname', async (req, res) => {
   res.send(JSON.stringify(values))
 });
 
-app.get('/api/filter', async (req, res) => {
-  const values = await getResult(req.query)
+app.get('/api/filter/:groupBy', async (req, res) => {
+  const values = await getResult(req.params.groupBy, req.query)
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(values))
 });
@@ -40,11 +40,11 @@ const getDistinctValues = async (fieldName, query) => {
   return values
 }
 
-const getResult = async (query) => {
+const getResult = async (groupBy, query) => {
   let values
   console.log('getResult: query='+query)
   await new Promise((resolve,reject) => {
-    Yad2DL.getResult(query, values => {
+    Yad2DL.getResult(groupBy, query, values => {
         resolve(values)
     })
   }).then(vals => values = vals)

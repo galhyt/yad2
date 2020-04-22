@@ -51,7 +51,7 @@ class Yad2DL {
         return match
     }
 
-    static getResult(query, callback) {
+    static getResult(groupBy, query, callback) {
         new Promise((resolve, reject) => {
             var match = Yad2DL.getMatch(query)
             this.connect(dbo => {
@@ -64,6 +64,8 @@ class Yad2DL {
                         $group: {
                             _id: "$ad_number",
                             city: {$last: "$city"},
+                            neighborhood: {$last: "$neighborhood"},
+                            address: {$last: "$address"},
                             sqMr: {$last: "$sqMr"},
                             room: {$last: "$room"},
                             lastPrice: {$last: "$price.value"}
@@ -71,7 +73,7 @@ class Yad2DL {
                     },
                     {
                         $group:  {
-                            _id: "$city",
+                            _id: "$"+groupBy,
                             avgSqmr: {$avg: {$divide: ["$lastPrice","$sqMr"]}},
                             avgPerRoom: {$avg: {$divide: ["$lastPrice", "$room"]}},
                             count: {$sum: 1}

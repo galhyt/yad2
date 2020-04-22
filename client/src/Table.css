@@ -1,0 +1,7 @@
+.drillDown {
+    cursor: pointer;
+}
+
+.drillDown::after {
+    content: "+";
+}
