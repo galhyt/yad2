@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './App.css';
 import FilterForm from './FilterForm'
 import Table from "./Table"
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const getDistinctValues = async (fieldName, query) => {
   let result

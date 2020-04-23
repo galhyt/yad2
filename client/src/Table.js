@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
+import BootstrapTable from 'react-bootstrap/Table'
 import './Table.css';
+
+const hebrew = {
+    'city': 'עיר',
+    'neighborhood': 'שכונה'
+}
 
 const TableHeader = (props) => {
     const {type} = props
@@ -7,10 +13,10 @@ const TableHeader = (props) => {
         <thead>
             <tr>
                 <th></th>
-                <th>{type}</th>
-                <th>Average Per Sq. Mr.</th>
-                <th>Average Per Room</th>
-                <th>Sample Number</th>
+                <th>{hebrew[type]}</th>
+                <th>ממוצע למ"ר</th>
+                <th>ממוצע לחדר</th>
+                <th>גודל מדגם</th>
             </tr>
         </thead>
     )
@@ -24,8 +30,8 @@ const drillDic = {
 class TableBody extends Component {
     onDrillClick(event) {
         const el = event.target
-        const toOpen = el.className.indexOf('open') !=-1
-        var className = (toOpen ? "close" : "open")
+        const toOpen = el.className.indexOf('drillopen') !=-1
+        var className = (toOpen ? "drillclose" : "drillopen")
         el.className = "drillDown " + className
 
         const {drillDown} = this.props
@@ -53,7 +59,7 @@ class TableBody extends Component {
             if (child != null) {
                 return (
                     <><tr key={"row_"+id}>
-                        <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} className="drillDown open"></td>
+                        <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} className="drillDown drillopen"></td>
                         <td>{el._id}</td>
                         <td>{el.avgSqmr.toFixed(2)}</td>
                         <td>{el.avgPerRoom.toFixed(2)}</td>
@@ -89,10 +95,10 @@ class Table extends Component {
         const {type} = this.props
         const {drillDown} = this.props
         return (
-            <table className={type}>
+            <BootstrapTable className={type} striped bordered hover size="sm">
                 <TableHeader type={type} />
                 <TableBody type={type} data={data} drillDown={drillDown} />
-            </table>
+            </BootstrapTable>
         )
     }
 }

@@ -1,13 +1,16 @@
 .drillDown {
     cursor: pointer;
+    text-align: center;
 }
 
-.drillDown.open::after {
+.drillDown.drillopen::after {
     content: "+";
+    width: 100%;
 }
 
-.drillDown.close::after {
+.drillDown.drillclose::after {
     content: "-";
+    width: 100%;
 }
 
 table.city {
