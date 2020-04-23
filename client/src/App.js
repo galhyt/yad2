@@ -61,14 +61,15 @@ class App extends React.Component {
   async onFilterFieldChange(id, value) {
     var newState = this.state
     newState[id+'Value'] = value
-    if (id === 'city')
-      newState.neighborhoodValues = await getDistinctValues('neighborhood', 'city=$eq:"'+value+'"')
+    if (id === 'city') {
+      newState.neighborhood = this.initializeState.neighborhood.concat(await getDistinctValues('neighborhood', 'city=$eq:"'+value+'"'))
+      newState.neighborhoodValue = null
+    }
 
     this.setState(newState)
   }
 
-  async submitForm() {
-    var newState = this.state
+  getFilter() {
     var query = 'sqMr=$ne:0&room=$ne:0'
     if (this.state.cityValue != null && this.state.cityValue != '- All -') {
       query += '&city=$eq:"'+this.state.cityValue +'"'
@@ -76,13 +77,26 @@ class App extends React.Component {
     if (this.state.neighborhoodValue != null && this.state.neighborhoodValue != '- All -') {
       query += '&neighborhood=$eq:"' + this.state.neighborhoodValue + '"'
     }
+
+    return query
+  }
+
+  async submitForm() {
+    var newState = this.state
+    var query = this.getFilter()
+
     newState.result = await this.getResult('city', query)
     this.setState(newState)
   }
 
   async drillDown(parentType, parentName, childType, resultTableId) {
     var newState = this.state
-    var query = 'sqMr=$ne:0&room=$ne:0&'+parentType+'=$eq:"'+parentName+'"'
+    var query = this.getFilter()
+    if (query.indexOf('&'+parentType+'=') != -1)
+      query = query.replace(new RegExp('(?<=&'+parentType+'=)'), '$eq:"'+parentName+'",')
+    else
+      query += '&'+parentType+'=$eq:"'+parentName+'"'
+    
     const data = await this.getResult(childType, query)
 
     ReactDOM.render(

@@ -26,7 +26,7 @@ class FilterForm extends Component {
         return (
             <div className="FilterForm">
                 <div>City: <Dropdown values={cityValues} id="city" onFilterFieldChange={onFilterFieldChange} /></div>
-                <div>Neighborhood: <Dropdown values={neighborhoodValues} id="neighborhhod" onFilterFieldChange={onFilterFieldChange} /></div>
+                <div>Neighborhood: <Dropdown values={neighborhoodValues} id="neighborhood" onFilterFieldChange={onFilterFieldChange} /></div>
                 <button onClick={submitForm}>Submit</button>
             </div>
         )
