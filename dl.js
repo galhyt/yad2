@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+require('custom-env').env(true)
 var MongoClient = require('mongodb').MongoClient;
-const dbConnection = "mongodb://localhost:27017/";
+var dbConnection = "mongodb://"+process.env.DB_HOST+":"+process.env.DB_PORT+"/";
+if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
 
 class Yad2DL {
     constructor() {}

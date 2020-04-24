@@ -2,10 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 //const pino = require('express-pino-logger')();
 const request = require('request');
+const Yad2DL = require('./dl')
 var fs = require('fs')
 
 var MongoClient = require('mongodb').MongoClient;
-var dbConnection = "mongodb://localhost:27017/";
+var dbConnection = "mongodb://"+process.env.DB_HOST+":"+process.env.DB_PORT+"/";
+if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -211,10 +213,7 @@ exportJson = data => {
 }
 
 function addToDb(data) {
-  MongoClient.connect(dbConnection, {poolSize: 100,bufferMaxEntries: 0, reconnectTries: 5000, useNewUrlParser: true, useUnifiedTopology: true}, async function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("yad2");
-    
+  Yad2DL.connect(async function(dbo) {
     var promises = []
     data.forEach(el => {
       promises.push(new Promise((resolve, reject) => {
@@ -245,7 +244,7 @@ function addToDb(data) {
     });
 
     let aw = await Promise.all(promises)
-    db.close();
+    //db.close();
   });
 }
 
