@@ -15,7 +15,7 @@ class Yad2DL {
     static connect(callback) {
         var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
         if (process.env.DB_USER)
-            options["auth"] = {user:process.env.DB_USER,password:process.env.DB_PASS}
+            options["auth"] = {username:process.env.DB_USER,password:process.env.DB_PASS}
 
         MongoClient.connect(dbConnection, options, async function(err, db) {
             if (err) throw err;
