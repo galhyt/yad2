@@ -5,20 +5,13 @@ var MongoClient = require('mongodb').MongoClient;
 var dbConnection = "mongodb://"
 if (process.env.DB_USER) dbConnection += process.env.DB_USER + ":" + process.env.DB_PASS
 dbConnection+=process.env.DB_HOST+":"+process.env.DB_PORT+"/";
-if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
-
-// var dbConnection = "mongodb://"
-// dbConnection+=process.env.DB_HOST+":"+process.env.DB_PORT+"/";
-// if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
+if (process.env.DB_USER) dbConnection += process.env.DB_USER
 
 class Yad2DL {
     constructor() {}
 
     static connect(callback) {
-        var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true, uri_decode_auth: true}
-        // if (process.env.DB_USER)
-        //     options["auth"] = {user:process.env.DB_USER,password:process.env.DB_PASS}
-
+        var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
         MongoClient.connect(dbConnection, options, async function(err, db) {
             if (err) throw err;
             var dbo = db.db("yad2");
