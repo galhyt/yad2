@@ -1,7 +1,7 @@
 {
     "type": "node",
     "scripts": {
-        "client-build": "cd client && npm run build && npm run dev",
+        "client-build": "cd client && npm run build && npm run server",
         "start": "npm run client-build"
     },
     "dependencies": {
