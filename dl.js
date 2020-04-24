@@ -2,14 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('custom-env').env(true)
 var MongoClient = require('mongodb').MongoClient;
-var dbConnection = "mongodb://"+process.env.DB_HOST+":"+process.env.DB_PORT+"/";
+// var dbConnection = "mongodb://"+process.env.DB_HOST+":"+process.env.DB_PORT+"/";
+// if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
+
+var dbConnection = "mongodb://"
+dbConnection+=process.env.DB_HOST+":"+process.env.DB_PORT+"/";
 if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
 
 class Yad2DL {
     constructor() {}
 
     static connect(callback) {
-        MongoClient.connect(dbConnection, {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}, async function(err, db) {
+        var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
+        if (process.env.DB_USER)
+            options["auth"] = {user:process.env.DB_USER,password:process.env.DB_PASS}
+
+        MongoClient.connect(dbConnection, options, async function(err, db) {
             if (err) throw err;
             var dbo = db.db("yad2");
             callback(dbo)
