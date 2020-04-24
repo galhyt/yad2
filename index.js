@@ -119,7 +119,7 @@ const doRequest = async (city, page) => {
 
       //console.log("%s no of records %d", new Date().toString(), data.length);
       addToDb(data);
-      exportJson(data);
+      //exportJson(data);
 
       resolve(data.length)
     });
