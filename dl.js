@@ -14,7 +14,7 @@ class Yad2DL {
         var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
         MongoClient.connect(dbConnection, options, async function(err, db) {
             if (err) throw err;
-            var dbo = db.db("yad2");
+            var dbo = db.db(process.env.DB_NAME);
             callback(dbo)
         })
     }
