@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+require('custom-env').env(true)
 const pino = require('express-pino-logger')();
 var Yad2DL = require('./dl')
 
@@ -24,7 +25,7 @@ app.get('/api/filter/:groupBy', async (req, res) => {
   res.send(JSON.stringify(values))
 });
 
-const server = app.listen(3001, () =>
+const server = app.listen(process.env.API_PORT, () =>
   console.log('Express server is running on '+ server.address().address+':'+server.address().port)
 );
 

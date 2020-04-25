@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "proxy": "https://localhost:3001/",
+  "proxy": "http://localhost:3001/",
   "name": "client",
   "version": "0.1.0",
   "private": true,
@@ -32,7 +32,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node-env-run ../api.js --exec nodemon",
-    "dev": "run-p server start",
+    "dev": "run-p server",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "eslintConfig": {
