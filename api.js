@@ -24,8 +24,8 @@ app.get('/api/filter/:groupBy', async (req, res) => {
   res.send(JSON.stringify(values))
 });
 
-app.listen(3001, () =>
-  console.log('Express server is running on localhost:3001')
+const server = app.listen(3001, () =>
+  console.log('Express server is running on '+ server.address().address+':'+server.address().port)
 );
 
 const getDistinctValues = async (fieldName, query) => {

@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "proxy": "https://rent-trends.herokuapp.com/:3001",
+  "proxy": "http://localhost:3001/",
   "name": "client",
   "version": "0.1.0",
   "private": true,
