@@ -7,5 +7,5 @@ app.get('/api/fieldvalues/:fieldname', async (req, res) => {
 });
 
 const server = app.listen(process.env.API_PORT, () =>
-  console.log('Express server is running on '+ server.address().address+':'+server.address().port)
+  console.log('Express server is running on '+ server.address())
 );
