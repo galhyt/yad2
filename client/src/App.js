@@ -71,12 +71,29 @@ class App extends React.Component {
   }
 
   getFilter() {
+    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue} = this.state
     var query = 'sqMr=$ne:0&room=$ne:0'
-    if (this.state.cityValue != null && this.state.cityValue != '- All -') {
-      query += '&city=$eq:"'+this.state.cityValue +'"'
+    if (cityValue != null && cityValue != '- All -') {
+      query += '&city=$eq:"'+cityValue +'"'
     }
-    if (this.state.neighborhoodValue != null && this.state.neighborhoodValue != '- All -') {
-      query += '&neighborhood=$eq:"' + this.state.neighborhoodValue + '"'
+    if (neighborhoodValue != null && neighborhoodValue != '- All -') {
+      query += '&neighborhood=$eq:"' + neighborhoodValue + '"'
+    }
+    if (fromRoomsValue != null || toRoomsValue) {
+      var roomClause = ''
+      if (fromRoomsValue != null)
+        roomClause += '$gte:' + fromRoomsValue
+      if (toRoomsValue != null) {
+        if (roomClause != '') roomClause += ','
+        roomClause += '$lte:' + toRoomsValue
+      }
+
+      if (query.indexOf('room=') != -1) {
+        query = query.replace(/(?<=room\=.+)(?=&|$)/, ','+roomClause)
+      }
+      else {
+        query += '&room=' + roomClause
+      }
     }
 
     return query

@@ -2,16 +2,25 @@ import React, { Component } from 'react'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form'
 import "./FilterForm.css"
-// const Col = BootstrapForm.Col
-// const Row = BootstrapForm.Row
 
-class Dropdown extends Component {
+class FilterElem extends Component {
     id = null
-    
+
     handleChange(e) {
         this.props.onFilterFieldChange(this.id, e.target.value)
     }
+}
 
+class FilterNumber extends FilterElem {
+    render() {
+        const {id} = this.props
+        this.id = id
+        
+        return <Form.Control as="input" type="number" id={id} name={id} onChange={this.handleChange.bind(this)} />
+    }
+}
+
+class Dropdown extends FilterElem {
     render() {
         const {values} = this.props
         const {id} = this.props
@@ -37,6 +46,14 @@ class FilterForm extends Component {
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Neighborhood</Form.Label>
                         <Dropdown values={neighborhoodValues} id="neighborhood" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>From no. of rooms</Form.Label>
+                        <FilterNumber id="fromRooms" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>To no. of rooms</Form.Label>
+                        <FilterNumber id="toRooms" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Button onClick={submitForm} className="mr-1">Submit</Button>
