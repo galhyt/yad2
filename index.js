@@ -5,14 +5,10 @@ const request = require('request');
 const Yad2DL = require('./dl')
 var fs = require('fs')
 
-var MongoClient = require('mongodb').MongoClient;
-var dbConnection = "mongodb://"+process.env.DB_HOST+":"+process.env.DB_PORT+"/";
-if (process.env.DB_SUFFIX) dbConnection += process.env.DB_SUFFIX
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var citiesCodes = [6300,5000,7400,8300,8400]
+var citiesCodes = [6300,5000,7400,8300,8400,6400]
 const setTimer = true
 // try to get cities codes from cmd
 if (process.argv.length > 2) {

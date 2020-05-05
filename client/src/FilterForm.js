@@ -35,7 +35,7 @@ class Dropdown extends FilterElem {
 
 class FilterForm extends Component {
     render() {
-        const {neighborhoodValues,cityValues,submitForm,onFilterFieldChange} = this.props
+        const {neighborhoodValues,cityValues,submitForm,onFilterFieldChange,monthArr} = this.props
         return (
             <Form>
                 <Form.Row>
@@ -54,6 +54,10 @@ class FilterForm extends Component {
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>To no. of rooms</Form.Label>
                         <FilterNumber id="toRooms" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>Month</Form.Label>
+                        <Dropdown values={monthArr} id="month" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Button onClick={submitForm} className="mr-1">Submit</Button>

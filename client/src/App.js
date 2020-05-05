@@ -25,6 +25,7 @@ class App extends React.Component {
     city: ["- All -"],
     neighborhoodValue: null,
     cityValue: null,
+    monthArr: [],
     result: []
   }
 
@@ -33,6 +34,7 @@ class App extends React.Component {
   async componentDidMount() {
     var promises = []
     var newstate = this.initializeState
+    newstate.monthArr = await this.getMonthArr()
     const fieldsNames = ['city']
 
     fieldsNames.forEach(fieldname => {
@@ -46,6 +48,18 @@ class App extends React.Component {
 
     await Promise.all(promises)
     this.setState(newstate)
+  }
+
+  async getMonthArr() {
+    var monthArr = []
+    await getDistinctValues("updated_at").then(vals => {
+      monthArr = vals.map(v=> {
+        const d = new Date(v)
+        return d.getFullYear() + '-' + (d.getMonth()+1) + '-01'
+      })
+    })
+
+    return monthArr.filter((v,i)=> {return monthArr.indexOf(v) === i})
   }
 
   async getResult(groupBy, query) {
@@ -71,13 +85,18 @@ class App extends React.Component {
   }
 
   getFilter() {
-    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue} = this.state
+    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue,monthValue} = this.state
     var query = 'sqMr=$ne:0&room=$ne:0'
     if (cityValue != null && cityValue != '- All -') {
       query += '&city=$eq:"'+cityValue +'"'
     }
     if (neighborhoodValue != null && neighborhoodValue != '- All -') {
       query += '&neighborhood=$eq:"' + neighborhoodValue + '"'
+    }
+    if (monthValue != null && monthValue != '- All -') {
+      var d = new Date(monthValue)
+      d.setMonth(d.getMonth()+1)
+      query += '&updated_at=$gte:"'+monthValue +'",$lte:"'+d.toISOString()+'"'
     }
     if (fromRoomsValue != null || toRoomsValue) {
       var roomClause = ''
@@ -131,10 +150,11 @@ class App extends React.Component {
     const {neighborhood} = this.state
     const {city} = this.state
     const {result} = this.state
+    const {monthArr} = this.state
     try {
       return (
         <div>
-        <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} />
+        <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} monthArr={monthArr} />
         <Table type="city" data={result} drillDown={this.drillDown.bind(this)} />
         </div>
       )
