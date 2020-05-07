@@ -169,6 +169,8 @@ const parseAppartmentData = itemData => {
   const updated_atPart = (itemData.updated_at == 'עודכן היום' ?  new Date(new Date().toISOString().replace(/(.+)T.+$/g, '$1')) : new Date(itemData.updated_at.replace(/[^\d\/]+/g, '').replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')))
   const refurbished = (itemData.Meshupatz_text == 'k' ? false : true)
   const city = itemData.row_2.match(/[א-ת\s]+$/)[0]
+  const latitude = itemData.coordinates.latitude
+  const longitude = itemData.coordinates.longitude
   var neighborhood = ""
   
   const neighborhoodMatch = itemData.row_2.match(/([א-ת\s]+)(?=,\s[א-ת\s]+$)/)
@@ -184,7 +186,9 @@ const parseAppartmentData = itemData => {
     address: addressPart,
     city: city.trim(),
     neighborhood: neighborhood.trim(),
-    refurbished: refurbished
+    refurbished: refurbished,
+    longitude: longitude,
+    latitude: latitude
   }
 
   return ret
@@ -213,7 +217,7 @@ function addToDb(data) {
     var promises = []
     data.forEach(el => {
       promises.push(new Promise((resolve, reject) => {
-        dbo.collection("appartments").findOne({'ad_number': el.ad_number}, (err, doc) => {
+        dbo.collection("appartments").findOne({'ad_number': {$eq: el.ad_number}}, (err, doc) => {
           promises.push(new Promise((resolve1, reject1) => {
             if (!doc) {
               promises.push(new Promise((resolve2,reject2)=> {
@@ -223,11 +227,23 @@ function addToDb(data) {
               }));
             }
             else {
-              if (doc.price.find(p => {return p.date == el.price[0].date}) == 'undefined')
+              if (typeof(doc.price.find(p => p.date === el.price[0].date)) == 'undefined')
                 doc.price.push(el.price[0])
 
               promises.push(new Promise((resolve2,reject2)=> {
-                dbo.collection("appartments").update({_id: el._id}, {$set: {price: doc.price, updated_at: el.updated_at}}, () => {
+                dbo.collection("appartments").updateOne({'ad_number': {$eq: el.ad_number}}, {$set: {
+                    price: doc.price,
+                    updated_at: el.updated_at,
+                    sqMr: el.sqMr,
+                    floor: el.floor,
+                    room: el.room,
+                    address: el.address,
+                    city: el.city,
+                    neighborhood: el.neighborhood,
+                    refurbished: el.refurbished,
+                    longitude: el.longitude,
+                    latitude: el.latitude
+                  }}, () => {
                   resolve2()
                 })
               }))

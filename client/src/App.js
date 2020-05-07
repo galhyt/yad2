@@ -96,7 +96,7 @@ class App extends React.Component {
     if (monthValue != null && monthValue != '- All -') {
       var d = new Date(monthValue)
       d.setMonth(d.getMonth()+1)
-      query += '&updated_at=$gte:"'+monthValue +'",$lte:"'+d.toISOString()+'"'
+      query += '&price.date=$gte:"'+monthValue +'",$lte:"'+d.toISOString()+'"'
     }
     if (fromRoomsValue != null || toRoomsValue) {
       var roomClause = ''
