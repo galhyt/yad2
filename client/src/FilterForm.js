@@ -16,26 +16,36 @@ class FilterNumber extends FilterElem {
         const {id} = this.props
         this.id = id
         
-        return <Form.Control as="input" type="number" id={id} name={id} onChange={this.handleChange.bind(this)} />
+        return <Form.Control as="input" type="number" id={id} name={id} onChange={this.handleChange.bind(this)} className="number" />
     }
 }
 
 class Dropdown extends FilterElem {
+    txt(val) {
+        return val
+    }
+
     render() {
         const {values} = this.props
         const {id} = this.props
         this.id = id
         const options = values.map((val, i) => {
-            return <option value={val} key={i}>{val}</option>
+            return <option value={val} key={i}>{this.txt(val)}</option>
         })
         
         return <Form.Control as="select" id={id} name={id} onChange={this.handleChange.bind(this)}>{options}</Form.Control>
     }
 }
 
+class MonthDropdown extends Dropdown {
+    txt(val) {
+        return val.replace('-01', '')
+    }
+}
+
 class FilterForm extends Component {
     render() {
-        const {neighborhoodValues,cityValues,submitForm,onFilterFieldChange,monthArr} = this.props
+        const {neighborhoodValues,cityValues,submitForm,onFilterFieldChange,monthArr,floor} = this.props
         return (
             <Form>
                 <Form.Row>
@@ -57,7 +67,11 @@ class FilterForm extends Component {
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Month</Form.Label>
-                        <Dropdown values={monthArr} id="month" onFilterFieldChange={onFilterFieldChange} />
+                        <MonthDropdown values={monthArr} id="month" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>Floor</Form.Label>
+                        <Dropdown values={floor} id="floor" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Button onClick={submitForm} className="mr-1">Submit</Button>

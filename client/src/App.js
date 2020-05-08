@@ -23,9 +23,10 @@ class App extends React.Component {
   initializeState = {
     neighborhood: ["- All -"],
     city: ["- All -"],
+    floor: ["- All -"],
     neighborhoodValue: null,
     cityValue: null,
-    monthArr: [],
+    monthArr: ["- All -"],
     result: []
   }
 
@@ -34,8 +35,8 @@ class App extends React.Component {
   async componentDidMount() {
     var promises = []
     var newstate = this.initializeState
-    newstate.monthArr = await this.getMonthArr()
-    const fieldsNames = ['city']
+    newstate.monthArr = await (await this.getMonthArr()).concat(newstate.monthArr)
+    const fieldsNames = ['city','floor']
 
     fieldsNames.forEach(fieldname => {
       promises.push(new Promise((resolve,reject) => {
@@ -47,6 +48,19 @@ class App extends React.Component {
     })
 
     await Promise.all(promises)
+    newstate.floor.sort((a,b) => {
+      if (a === b) return 0
+      if (a == "- All -") return -1
+      if (b == "- All -") return 1
+      return (Number(a) < Number(b) ? -1 : 1)
+    })
+    newstate.monthArr.sort((a,b) => {
+      if (a === b) return 0
+      if (a == "- All -") return -1
+      if (b == "- All -") return 1
+      return (new Date(a) < new Date(b) ? -1 : 1)
+    })
+    newstate.city.sort()
     this.setState(newstate)
   }
 
@@ -78,6 +92,7 @@ class App extends React.Component {
     newState[id+'Value'] = value
     if (id === 'city') {
       newState.neighborhood = this.initializeState.neighborhood.concat(await getDistinctValues('neighborhood', 'city=$eq:"'+value+'"'))
+      newState.neighborhood.sort()
       newState.neighborhoodValue = null
     }
 
@@ -85,13 +100,16 @@ class App extends React.Component {
   }
 
   getFilter() {
-    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue,monthValue} = this.state
+    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue,monthValue,floorValue} = this.state
     var query = 'sqMr=$ne:0&room=$ne:0'
     if (cityValue != null && cityValue != '- All -') {
       query += '&city=$eq:"'+cityValue +'"'
     }
     if (neighborhoodValue != null && neighborhoodValue != '- All -') {
       query += '&neighborhood=$eq:"' + neighborhoodValue + '"'
+    }
+    if (floorValue != null && floorValue != '- All -') {
+      query += '&floor=$eq:' + floorValue
     }
     if (monthValue != null && monthValue != '- All -') {
       var d = new Date(monthValue)
@@ -147,14 +165,11 @@ class App extends React.Component {
   }
 
   render() {
-    const {neighborhood} = this.state
-    const {city} = this.state
-    const {result} = this.state
-    const {monthArr} = this.state
+    const {neighborhood,city,result,monthArr,floor} = this.state
     try {
       return (
         <div>
-        <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} monthArr={monthArr} />
+        <FilterForm neighborhoodValues={neighborhood} cityValues={city} submitForm={this.submitForm.bind(this)} onFilterFieldChange={this.onFilterFieldChange.bind(this)} monthArr={monthArr} floor={floor} />
         <Table type="city" data={result} drillDown={this.drillDown.bind(this)} />
         </div>
       )

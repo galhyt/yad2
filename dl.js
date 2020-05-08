@@ -77,6 +77,7 @@ class Yad2DL {
                             address: {$last: "$address"},
                             sqMr: {$last: "$sqMr"},
                             room: {$last: "$room"},
+                            floor: {$last: "$floor"},
                             lastPrice: {$last: "$price.value"}
                         }
                     },

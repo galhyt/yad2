@@ -5,3 +5,7 @@
 .FormGroup button {
     margin-top: 2em;
 }
+
+.FormGroup .number {
+    width: 5em;
+}
