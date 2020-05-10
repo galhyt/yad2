@@ -84,9 +84,18 @@ class Yad2DL {
                     {
                         $group:  {
                             _id: "$"+groupBy,
-                            avgSqmr: {$avg: {$divide: ["$lastPrice","$sqMr"]}},
-                            avgPerRoom: {$avg: {$divide: ["$lastPrice", "$room"]}},
+                            sumSqmr: {$sum: "$sqMr"},
+                            sumPrice: {$sum: "$lastPrice"},
+                            sumRoom: {$sum: "$room"},
                             count: {$sum: 1}
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            avgSqmr: {$divide: ["$sumPrice", "$sumSqmr"]},
+                            avgPerRoom: {$divide: ["$sumPrice", "$sumRoom"]},
+                            count: 1
                         }
                     }
                     ]).toArray(function(err, results) {

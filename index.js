@@ -61,7 +61,9 @@ const main = () => {
     // })
 }
 
-const doScheduledTask = async (indx, page, iteration) => {
+var errDic = []
+const doScheduledTask = async (indx, page, iteration, retake) => {
+  if (typeof(retake) == 'undefined') retake = false
   if (typeof(indx) == 'undefined') indx = 0
   if (typeof(iteration) == 'undefined') iteration = 1
 
@@ -71,9 +73,12 @@ const doScheduledTask = async (indx, page, iteration) => {
   }
   catch (err) {
       console.log(err.message)
+      if (!retake)
+        errDic.push({indx:indx, page:page, iteration:iteration})
   }
   finally {
     console.log('iteration=%s,city=%s,page=%s,no of records=%s,date=%s', iteration, citiesCodes[indx], page, len, new Date())
+    if (retake) return
 
     if (len < 15) {
       indx++;
@@ -88,7 +93,7 @@ const doScheduledTask = async (indx, page, iteration) => {
 
     if (indx < citiesCodes.length) {
       var millisecs = Math.floor(
-        Math.random() * 30000 + 30000
+        Math.random() * 15000 + 15000
       )
 
       if (iteration % 10 == 0) millisecs *= 4;
@@ -97,6 +102,11 @@ const doScheduledTask = async (indx, page, iteration) => {
       setTimeout(() => {
         doScheduledTask(indx, page, iteration)
       }, millisecs);
+    }
+    else {
+      errDic.forEach(el => {
+        doScheduledTask(el.indx, el.page, el.iteration, true)
+      })
     }
   }
 }
