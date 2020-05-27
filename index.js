@@ -26,20 +26,19 @@ const options = {
   headers: {
     'authority': 'www.yad2.co.il',
     'method': 'GET',
-    'path': '/realestate/rent?city=6300&street=0101',
-      'Accept': 'text/html',
-      'Accept-Charset': 'utf-8',
-      'content-type': 'text/html; charset=utf-8',
-      'authority': 'www.yad2.co.il',
-      'scheme': 'https',
-      'accept-encoding': 'gzip, deflate, br',
-      'accept-language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7,utf-8',
-      'cookie': 'y2018-2-cohort=43; __uzma=49b87779-ea29-4440-964f-cd6e21916436; __uzmb=1586022568; abTestKey=14; UTGv2=h41d1202054a58e8ca3f9f721c797d013882; __ssds=3; __ssuzjsr3=a9be0cd8e; __uzmaj3=953a2de9-b7d8-458b-831b-8dcb62950474; __uzmbj3=1586022575; use_elastic_search=1; __gads=ID=a6aa2029485b447e:T=1586022576:S=ALNI_MZUMfgQ7fFOvjz3l06yjBYA6Xt5cQ; fitracking_12=no; historyprimaryarea=hamerkaz_area; historysecondaryarea=ramat_gan_givataim; ; _ga=GA1.3.1763115841.1586380895; searchB144FromYad2=2_C_1844; yad2upload=1056964618.27765.0000; _gid=GA1.3.11360897.1586733941; y2_cohort_2020=59; y2session=5LwX82RKG6E7CD05QphCXalXPKaBwV4IdhTsIZyR; __uzmcj3=285225891073; __uzmdj3=1586741082; __uzmc=7331329254365; __uzmd=1586741081; favorites_userid=bia922357116',
-      'if-none-match': '"599d7-2JgeooADn2wrUIEvgA+1ani5RcU"',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'no-cors',
-      'sec-fetch-site': 'same-origin',
-      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+    'path': '/realestate/rent?city=6300&page=2',
+    'scheme': 'https',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7',
+    'cache-control': 'max-age=0',
+    'cookie': 'adoric_user=1; adoric_goals=%5B%225ae5882c307a8fbd0017c1c5%22%5D; adoric_uniq_day_id=5ec04b15ff961f001890c7f0; y2018-2-cohort=43; __uzma=49b87779-ea29-4440-964f-cd6e21916436; __uzmb=1586022568; __ssds=3; __uzmaj3=953a2de9-b7d8-458b-831b-8dcb62950474; __ssuzjsr3=a9be0cd8e; __uzmbj3=1586022575; __gads=ID=a6aa2029485b447e:T=1586022576:S=ALNI_MZUMfgQ7fFOvjz3l06yjBYA6Xt5cQ; _ga=GA1.3.1763115841.1586380895; abTestKey=92; yad2upload=536870922.27765.0000; fitracking_48=no; use_elastic_search=1; bc.visitorToken=6652260848939728896; historyprimaryarea=hamerkaz_area___sharon_area; historysecondaryarea=ramat_gan_givataim___ramat_hasharon_herzeliya; DCST=pE9; SPSI=1fb29a4723506dc3d2f6b83601f68e80; UTGv2=h41d1202054a58e8ca3f9f721c797d013882; _gid=GA1.3.307618122.1589660435; fi_utm=direct%7Cdirect%7C%7C%7C%7C; y2_cohort_2020=44; y2session=nMPBzC44ILWj3gHfFeA022EAKPV96qKQjOViUjoo; spcsrf=6a26580f479619d57e413479569542e0; PRLST=Hh; favorites_userid=bia922357116; __uzmcj3=8092913633139; __uzmdj3=1589660806; adOtr=92fP17b2453; __uzmc=5399293173487; __uzmd=1589660809; DSR=LBLHS4TI2ryAZIBOwY+X7UWaonBgvT1HPuBJLQGvYBaG5ZMByvtHzBjxPfGCKJJtd4gyGms5463oscnn5ADdnw==; DCSS=ADE3B32496826E972180B520C3DAEBC05B2E10F; DGCC=tK',
+    'referer': 'https://www.yad2.co.il/realestate/rent?city=6300&page=2',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'upgrade-insecure-requests': 1,
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
   }
 };
 
@@ -114,6 +113,8 @@ const doScheduledTask = async (indx, page, iteration, retake) => {
 const doRequest = async (city, page) => {
   var url =  'https://www.yad2.co.il/realestate/rent?city=' + city
   if (typeof(page) != 'undefined') url += '&page=' + page
+  options.headers.path = url.replace('https://www.yad2.co.il', '')
+  options.headers.referer = url
 
   let dataLen = await new Promise((resolve, reject) => {
     request(url, options, (err, res, body) => {

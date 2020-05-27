@@ -1,8 +1,8 @@
 {
     "type": "node",
     "scripts": {
-        "client-build": "cd client && npm run build && npm run dev",
-        "start": "npm run client-build"
+        "start": "node api.js",
+        "heroku-postbuild": "cd client && npm install && npm run build"
     },
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.8.3",

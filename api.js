@@ -8,6 +8,19 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 
+var PORT = process.env.API_PORT || process.env.PORT
+
+if (process.env.APP_ENV === 'production') {
+  // Exprees will serve up production assets
+  app.use(express.static('client/build'));
+
+  // Express serve up index.html file if it doesn't recognize route
+  const path = require('path');
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
+
 app.get('/api/fieldvalues/:fieldname', async (req, res) => {
   var values = await getDistinctValues(req.params.fieldname, req.query)
   values = values.filter(val => {
@@ -25,7 +38,7 @@ app.get('/api/filter/:groupBy', async (req, res) => {
   res.send(JSON.stringify(values))
 });
 
-const server = app.listen(process.env.API_PORT, () =>
+const server = app.listen(PORT, () =>
   console.log('Express server is running on '+ server.address().address+':'+server.address().port)
 );
 
