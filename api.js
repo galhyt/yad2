@@ -11,14 +11,13 @@ app.use(pino);
 var PORT = process.env.API_PORT || process.env.PORT
 
 if (process.env.APP_ENV === 'production') {
-  // Exprees will serve up production assets
-  app.use(express.static('client/build'));
-
-  // Express serve up index.html file if it doesn't recognize route
-  const path = require('path');
+  const path = require('path')
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, 'client/build')))
+  // Anything that doesn't match the above, send back index.html
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
+    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+  })
 }
 
 app.get('/api/fieldvalues/:fieldname', async (req, res) => {
