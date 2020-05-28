@@ -144,19 +144,22 @@ class App extends React.Component {
     this.setState(newState)
   }
 
-  async drillDown(parentType, parentName, childType, resultTableId) {
+  async drillDown(parentType, parentName, childType, resultTableId, grandParentType, grandParentName) {
     var newState = this.state
     var query = this.getFilter()
-    if (query.indexOf('&'+parentType+'=') != -1)
-      query = query.replace(new RegExp('(?<=&'+parentType+'=)'), '$eq:"'+parentName+'",')
-    else
-      query += '&'+parentType+'=$eq:"'+parentName+'"'
-    
+    var arr = [{type: parentType, name:parentName},{type:grandParentType, name:grandParentName}]
+    arr.forEach(el => {
+      if (el.type == null) return true
+      if (query.indexOf('&'+el.type+'=') != -1)
+        query = query.replace(new RegExp('(?<=&'+el.type+'=)'), '$eq:"'+el.name+'",')
+      else
+        query += '&'+el.type+'=$eq:"'+el.name+'"'
+    })
     const data = await this.getResult(childType, query)
 
     ReactDOM.render(
       <React.StrictMode>
-        <Table type={childType} data={data} drillDown={this.drillDown.bind(this)}  />
+        <Table type={childType} data={data} drillDown={this.drillDown.bind(this)} parentType={parentType} parentName={parentName} />
       </React.StrictMode>,
       document.getElementById(resultTableId)
     );

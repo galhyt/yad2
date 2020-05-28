@@ -36,12 +36,14 @@ class TableBody extends Component {
 
         const {drillDown} = this.props
         const {type, typeid, child} = el.attributes
-        const {idattrib} = el.attributes
+        const {idattrib, parentType, parentName} = el.attributes
         const id = idattrib.nodeValue
+        const parentTypeAttrib = (typeof(parentType) != 'undefined' ? parentType.nodeValue : null)
+        const parentNameAttrib = (typeof(parentName) != 'undefined' ? parentName.nodeValue : null)
         const drillElem = document.getElementById(id)
         if (toOpen) {
             if (drillElem.innerHTML == '')
-                drillDown(type.nodeValue, typeid.nodeValue, child.nodeValue, id)
+                drillDown(type.nodeValue, typeid.nodeValue, child.nodeValue, id, parentTypeAttrib, parentNameAttrib)
             else
                 drillElem.style.display = 'block'
         }
@@ -51,7 +53,7 @@ class TableBody extends Component {
 
     render() {
         const {data} = this.props
-        const {drillDown} = this.props
+        const {drillDown, parentType, parentName} = this.props
         const {type} = this.props
         let child = drillDic[type]
         const rows = data.map((el, indx) => {
@@ -59,7 +61,7 @@ class TableBody extends Component {
             if (child != null) {
                 return (
                     <><tr key={"row_"+id}>
-                        <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} className="drillDown drillopen"></td>
+                        <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} parentType={parentType} parentName={parentName} className="drillDown drillopen"></td>
                         <td>{el._id}</td>
                         <td>{el.avgSqmr.toFixed(2)}</td>
                         <td>{el.avgPerRoom.toFixed(2)}</td>
@@ -93,11 +95,11 @@ class Table extends Component {
     render() {
         const {data} = this.props
         const {type} = this.props
-        const {drillDown} = this.props
+        const {drillDown, parentType, parentName} = this.props
         return (
             <BootstrapTable className={type} striped bordered hover size="sm">
                 <TableHeader type={type} />
-                <TableBody type={type} data={data} drillDown={drillDown} />
+                <TableBody type={type} data={data} drillDown={drillDown} parentType={parentType} parentName={parentName} />
             </BootstrapTable>
         )
     }
