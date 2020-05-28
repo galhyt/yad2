@@ -17,15 +17,24 @@ Yad2DL.connect((dbo) => {
         //     }
         // }
         {
-            $group: {
+            $project: {
                 _id: "$ad_number",
-                count: {$sum: 1}
+                count: {$size: "$price"}
             }
         },
         {
             $match: {
                 count: {$gt: 1}
             }
+        },
+        {
+            $group: {
+                _id: "$count",
+                c: {$sum: 1}
+            }
+        },
+        {
+            $sort:  {"_id": 1}
         }
     ]).toArray(function(err, results) {
         // results.forEach(el => {
@@ -47,7 +56,7 @@ Yad2DL.connect((dbo) => {
         //         throw new Error()
         //     })
         // });
-        console.log(results.length)
+        //console.log(err.message)
         console.log(JSON.stringify(results));
     })
 })
