@@ -10,16 +10,6 @@ app.use(pino);
 
 var PORT = process.env.API_PORT || process.env.PORT
 
-if (process.env.APP_ENV === 'production') {
-  const path = require('path')
-  // Serve static files from the React frontend app
-  app.use(express.static(path.join(__dirname, 'client/build')))
-  // Anything that doesn't match the above, send back index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'))
-  })
-}
-
 app.get('/api/fieldvalues/:fieldname', async (req, res) => {
   var values = await getDistinctValues(req.params.fieldname, req.query)
   values = values.filter(val => {
@@ -36,6 +26,16 @@ app.get('/api/filter/:groupBy', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(values))
 });
+
+if (process.env.APP_ENV === 'production') {
+  const path = require('path')
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, 'client/build')))
+  // Anything that doesn't match the above, send back index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+  })
+}
 
 const server = app.listen(PORT, () =>
   console.log('Express server is running on '+ server.address().address+':'+server.address().port)
