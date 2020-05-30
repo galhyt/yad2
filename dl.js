@@ -60,14 +60,104 @@ class Yad2DL {
         return match
     }
 
+    static getDistanceCalc(attribs) {
+        if (attribs == null) return null
+
+        var lon = attribs.lon
+        var lat = attribs.lat
+        return {
+            $multiply: [{
+                $acos: {
+                    $add: [{
+                        $multiply: [{
+                            $sin: {
+                                $divide: [
+                                    {$multiply: [lat,Math.PI]},180
+                                ]
+                            },
+                            $sin: {
+                                $divide: [
+                                    {$multiply: ["$latitude",Math.PI]},180
+                                ]
+                            }
+                        }]},{
+                        $multiply: [{
+                            $cos: {
+                                $divide: [
+                                    {$multiply: [lat,Math.PI]},180
+                                ]
+                            }},{
+                            $cos: {
+                                $divide: [
+                                    {$multiply: ["$latitude",Math.PI]},180
+                                ]
+                            }},{
+                            $cos: {
+                                $subtract: [{
+                                    $divide: [
+                                        {$multiply: ["$longitude",Math.PI]},180
+                                    ]},{
+                                        $divide: [
+                                            {$multiply: [lon,Math.PI]},180
+                                        ]
+                                    }]
+                                }
+                            }
+                        ]}
+                    ]
+                }
+            },
+            6371000
+        ]}
+    }
+
     static getResult(groupBy, query, callback) {
         new Promise((resolve, reject) => {
             var match = Yad2DL.getMatch(query)
+            var distanceCalc = Yad2DL.getDistanceCalc(match.distanceCalc)
+            var distanceMatch = {}
+            if (match.distanceCalc != null) {
+                distanceMatch = {distance: match.distance}
+                delete match.distanceCalc
+                delete match.distance
+            }
             this.connect(dbo => {
                 dbo.collection("appartments").aggregate([
                     {$unwind: "$price"},
                     {
                         $match: match
+                    },
+                    {
+                        $project: {
+                            ad_number: 1,
+                            city: 1,
+                            neighborhood: 1,
+                            address: 1,
+                            sqMr: 1,
+                            room: 1,
+                            floor: 1,
+                            price: 1,
+                            longitude: {$convert: {"input":"$longitude", "to": "decimal", onNull: 0, onError: 0 }},
+                            latitude: {$convert: {"input":"$latitude", "to": "decimal", onNull: 0, onError: 0 }}
+                        }
+                    },
+                    {
+                        $project: {
+                            ad_number: 1,
+                            city: 1,
+                            neighborhood: 1,
+                            address: 1,
+                            sqMr: 1,
+                            room: 1,
+                            floor: 1,
+                            price: 1,
+                            longitude: 1,
+                            latitude: 1,
+                            distance: distanceCalc
+                        }
+                    },
+                    {
+                        $match: distanceMatch
                     },
                     {
                         $group: {

@@ -238,7 +238,7 @@ function addToDb(data) {
               }));
             }
             else {
-              if (typeof(doc.price.find(p => p.date === el.price[0].date)) == 'undefined')
+              if (typeof(doc.price.find(p => p.date.getTime() === el.price[0].date.getTime())) == 'undefined')
                 doc.price.push(el.price[0])
 
               promises.push(new Promise((resolve2,reject2)=> {

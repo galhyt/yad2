@@ -4,6 +4,7 @@ import './App.css';
 import FilterForm from './FilterForm'
 import Table from "./Table"
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { stringify } from 'querystring';
 
 const getDistinctValues = async (fieldName, query) => {
   let result
@@ -131,6 +132,12 @@ class App extends React.Component {
       else {
         query += '&room=' + roomClause
       }
+    }
+
+    const {longitudeValue, latitudeValue, radiusValue} = this.state
+    if ([longitudeValue, latitudeValue, radiusValue].every(el=> el != null)) {
+      query += '&distance=$lt:'+radiusValue
+      query += '&distanceCalc="lon":'+longitudeValue+',"lat":'+latitudeValue
     }
 
     return query
