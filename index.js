@@ -8,7 +8,7 @@ var fs = require('fs')
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var citiesCodes = [6300,5000,7400,8300,8400,6400]
+var citiesCodes = [6300,5000,7400,8300,8400,6400,9700,7900]
 const setTimer = true
 // try to get cities codes from cmd
 if (process.argv.length > 2) {
@@ -180,14 +180,14 @@ const parseAppartmentData = itemData => {
   const updated_atPart = (itemData.updated_at == 'עודכן היום' ?  new Date(new Date().toISOString().replace(/(.+)T.+$/g, '$1')) : new Date(itemData.updated_at.replace(/[^\d\/]+/g, '').replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')))
   const refurbished = (itemData.Meshupatz_text == 'k' ? false : true)
   const city = itemData.row_2.match(/[א-ת\s]+$/)[0]
-  const latitude = itemData.coordinates.latitude
-  const longitude = itemData.coordinates.longitude
+  const latitude = (!isNaN(itemData.coordinates.latitude) ? Number(itemData.coordinates.latitude) : null)
+  const longitude = (!isNaN(itemData.coordinates.longitude) ? Number(itemData.coordinates.longitude) : null)
   var neighborhood = ""
   
   const neighborhoodMatch = itemData.row_2.match(/([א-ת\s]+)(?=,\s[א-ת\s]+$)/)
   if (neighborhoodMatch != null) neighborhood = neighborhoodMatch[0]
 
-  const ret = {
+  var ret = {
     ad_number: ad_numberPart,
     updated_at: updated_atPart,
     price: [{date: updated_atPart, value: Number(pricePart)}],
@@ -197,9 +197,12 @@ const parseAppartmentData = itemData => {
     address: addressPart,
     city: city.trim(),
     neighborhood: neighborhood.trim(),
-    refurbished: refurbished,
-    longitude: longitude,
-    latitude: latitude
+    refurbished: refurbished
+  }
+
+  if (longitude !=  null && latitude != null) {
+    ret['longitude'] = longitude
+    ret['latitude'] = latitude
   }
 
   return ret

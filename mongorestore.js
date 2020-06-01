@@ -9,19 +9,20 @@ stdin.addListener("data", function(d) {
     // end with a linefeed.  so we (rather crudely) account for that  
     // with toString() and then trim() 
 
-    Yad2DL.connect(dbo => {
-        var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
-        MongoClient.connect(dbConnection, options, async function(err, db) {
-            if (err) throw err;
-            var productDbo = db.db('heroku_qd87fbg5');
-            const cur = dbo.collection("appartments").find()
-            cur.forEach(el => {
-                productDbo.collection("appartments").findOne({'ad_number': {$eq: el.ad_number}}, (err, doc) => {
-                    if (!doc) {
-                        productDbo.collection("appartments").insertOne(el, function(err, res) {
-                        })
+    var options = {poolSize: 100,bufferMaxEntries: 0, useNewUrlParser: true, useUnifiedTopology: true}
+    MongoClient.connect(dbConnection, options, async function(err, db) {
+        if (err) throw err;
+        var dbo = db.db('heroku_qd87fbg5');
+        const cur = dbo.collection("appartments").find()
+        cur.forEach(el => {
+            dbo.collection("appartments").findOne({'ad_number': {$eq: el.ad_number}}, (err, doc) => {
+                if (doc && isNaN(doc.longitude) && typeof(doc.longitude) != 'undefined') {
+                    dbo.collection("appartments").updateOne({'ad_number': {$eq: el.ad_number}}, {$unset: {
+                        longitude:1,
+                        latitude:1
                     }
-                })
+                    })
+                }
             })
         })
     })

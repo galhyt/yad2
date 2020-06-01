@@ -150,20 +150,6 @@ class Yad2DL {
                             room: 1,
                             floor: 1,
                             price: 1,
-                            longitude: {$convert: {"input":"$longitude", "to": "decimal", onNull: 0, onError: 0 }},
-                            latitude: {$convert: {"input":"$latitude", "to": "decimal", onNull: 0, onError: 0 }}
-                        }
-                    },
-                    {
-                        $project: {
-                            ad_number: 1,
-                            city: 1,
-                            neighborhood: 1,
-                            address: 1,
-                            sqMr: 1,
-                            room: 1,
-                            floor: 1,
-                            price: 1,
                             longitude: 1,
                             latitude: 1,
                             sin1: distanceCalc.sin1,
