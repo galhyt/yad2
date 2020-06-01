@@ -135,7 +135,7 @@ class App extends React.Component {
     }
 
     const {longitudeValue, latitudeValue, radiusValue} = this.state
-    if ([longitudeValue, latitudeValue, radiusValue].every(el=> el != null)) {
+    if ([longitudeValue, latitudeValue, radiusValue].every(el=> el != null && el != '')) {
       query += '&distance=$lt:'+radiusValue
       query += '&distanceCalc="lon":'+longitudeValue+',"lat":'+latitudeValue
     }
