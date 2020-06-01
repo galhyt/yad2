@@ -24,13 +24,6 @@ Yad2DL.connect((dbo) => {
         {
             $project: {
                 ad_number: 1,
-                longitude: {$convert: {"input":"$longitude", "to": "double", onNull: 0, onError: 0 }},
-                latitude: {$convert: {"input":"$latitude", "to": "double", onNull: 0, onError: 0 }}
-            }
-        },
-        {
-            $project: {
-                ad_number: 1,
                 longitude: 1,
                 latitude: 1,
                 sin1: {
