@@ -73,8 +73,11 @@ class FilterForm extends Component {
                         <Form.Label>Floor</Form.Label>
                         <Dropdown values={floor} id="floor" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Button onClick={submitForm} className="mr-1">Submit</Button>
+                    </Form.Group>
                 </Form.Row>
-                <Form.Row>
+                {/* <Form.Row>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Longitude</Form.Label>
                         <FilterNumber id="longitude" onFilterFieldChange={onFilterFieldChange} />
@@ -90,7 +93,7 @@ class FilterForm extends Component {
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Button onClick={submitForm} className="mr-1">Submit</Button>
                     </Form.Group>
-                </Form.Row>
+                </Form.Row> */}
             </Form>
         )
     }

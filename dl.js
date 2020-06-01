@@ -149,60 +149,60 @@ class Yad2DL {
                             sqMr: 1,
                             room: 1,
                             floor: 1,
-                            price: 1,
-                            longitude: 1,
-                            latitude: 1,
-                            sin1: distanceCalc.sin1,
-                            sin2: distanceCalc.sin2,
-                            cos1: distanceCalc.cos1,
-                            cos2: distanceCalc.cos2,
-                            cos3: distanceCalc.cos3
+                            price: 1//,
+                            // longitude: 1,
+                            // latitude: 1,
+                            // sin1: distanceCalc.sin1,
+                            // sin2: distanceCalc.sin2,
+                            // cos1: distanceCalc.cos1,
+                            // cos2: distanceCalc.cos2,
+                            // cos3: distanceCalc.cos3
                         }
                     },
-                    {
-                        $project: {
-                            ad_number: 1,
-                            city: 1,
-                            neighborhood: 1,
-                            address: 1,
-                            sqMr: 1,
-                            room: 1,
-                            floor: 1,
-                            price: 1,
-                            longitude: 1,
-                            latitude: 1,
-                            sin1: 1,
-                            sin2: 1,
-                            cos1: 1,
-                            cos2: 1,
-                            cos3: 1,
-                            adding: distanceCalc.adding
-                        }
-                    },
-                    {
-                        $project: {
-                            ad_number: 1,
-                            city: 1,
-                            neighborhood: 1,
-                            address: 1,
-                            sqMr: 1,
-                            room: 1,
-                            floor: 1,
-                            price: 1,
-                            longitude: 1,
-                            latitude: 1,
-                            sin1: 1,
-                            sin2: 1,
-                            cos1: 1,
-                            cos2: 1,
-                            cos3: 1,
-                            adding: 1,
-                            distance: distanceCalc.distanceFormula
-                        }
-                    },
-                    {
-                        $match: distanceMatch
-                    },
+                    // {
+                    //     $project: {
+                    //         ad_number: 1,
+                    //         city: 1,
+                    //         neighborhood: 1,
+                    //         address: 1,
+                    //         sqMr: 1,
+                    //         room: 1,
+                    //         floor: 1,
+                    //         price: 1,
+                    //         longitude: 1,
+                    //         latitude: 1,
+                    //         sin1: 1,
+                    //         sin2: 1,
+                    //         cos1: 1,
+                    //         cos2: 1,
+                    //         cos3: 1,
+                    //         adding: distanceCalc.adding
+                    //     }
+                    // },
+                    // {
+                    //     $project: {
+                    //         ad_number: 1,
+                    //         city: 1,
+                    //         neighborhood: 1,
+                    //         address: 1,
+                    //         sqMr: 1,
+                    //         room: 1,
+                    //         floor: 1,
+                    //         price: 1,
+                    //         longitude: 1,
+                    //         latitude: 1,
+                    //         sin1: 1,
+                    //         sin2: 1,
+                    //         cos1: 1,
+                    //         cos2: 1,
+                    //         cos3: 1,
+                    //         adding: 1,
+                    //         distance: distanceCalc.distanceFormula
+                    //     }
+                    // },
+                    // {
+                    //     $match: distanceMatch
+                    // },
                     {
                         $group: {
                             _id: "$ad_number",
