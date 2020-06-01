@@ -16,16 +16,16 @@ function distance(lon1, lat1, lon2, lat2) {
 }
 
 Yad2DL.connect((dbo) => {
-    var lon = 32.075611
-    var lat = 34.804000
+    var lat = 32.075611
+    var lon = 34.804000
     var radius = 100
     dbo.collection("appartments").aggregate([
         {$unwind: "$price"},
         {
             $project: {
                 ad_number: 1,
-                longitude: 1,
-                latitude: {$convert: {"input":"$latitude", "to": "decimal", onNull: 0, onError: 0 }}
+                longitude: {$convert: {"input":"$longitude", "to": "double", onNull: 0, onError: 0 }},
+                latitude: {$convert: {"input":"$latitude", "to": "double", onNull: 0, onError: 0 }}
             }
         },
         {
@@ -33,93 +33,111 @@ Yad2DL.connect((dbo) => {
                 ad_number: 1,
                 longitude: 1,
                 latitude: 1,
-                mul: {$multiply: ["$latitude",Math.PI]}
+                sin1: {
+                    $sin: {
+                        $divide: [
+                            {$multiply: [lat,Math.PI]},180
+                        ]
+                    }
+                },
+                sin2: {
+                    $sin: {
+                        $divide: [
+                            {$multiply: ["$latitude",Math.PI]},180
+                        ]
+                    }
+                },
+                cos1: {
+                    $cos: {
+                        $divide: [
+                            {$multiply: [lat,Math.PI]},180
+                        ]
+                    }
+                },
+                cos2: {
+                    $cos: {
+                        $divide: [
+                            {$multiply: ["$latitude",Math.PI]},180
+                        ]
+                    }
+                },
+                cos3: {
+                    $cos: {
+                        $subtract: [{
+                            $divide: [
+                                {$multiply: ["$longitude",Math.PI]},180
+                            ]},{
+                                $divide: [
+                                    {$multiply: [lon,Math.PI]},180
+                                ]
+                            }]
+                        }
+                }
+            }
+        
+        },
+        {
+            $project: {
+                ad_number: 1,
+                longitude: 1,
+                latitude: 1,
+                sin1: 1,
+                sin2: 1,
+                cos1: 1,
+                cos2: 1,
+                cos3: 1,
+                adding: {
+                    $add: [
+                        {$multiply: ["$sin1", "$sin2"]},
+                        {$multiply: ["$cos1","$cos2","$cos3"]}
+                    ]
+                }
             }
         },
-        // {
-        //     $project: {
-        //         ad_number: 1,
-        //         longitude: 1,
-        //         latitude: 1,
-        //         //mul: {$multiply: ["$latitude",Math.PI]},
-        //         // sin: {
-        //         //     $sin: {
-        //         //         $divide: [
-        //         //             {$multiply: [latitude,Math.PI]},180
-        //         //         ]
-        //         //     }
-        //         // },
-        //         distance: {
-        //             $multiply: [{
-        //                 $acos: {
-        //                     $add: [{
-        //                         $multiply: [{
-        //                             $sin: {
-        //                                 $divide: [
-        //                                     {$multiply: [lat,Math.PI]},180
-        //                                 ]
-        //                             },
-        //                             $sin: {
-        //                                 $divide: [
-        //                                     {$multiply: [Number("$latitude"||0),Math.PI]},180
-        //                                 ]
-        //                             }
-        //                         }]},{
-        //                         $multiply: [{
-        //                             $cos: {
-        //                                 $divide: [
-        //                                     {$multiply: [lat,Math.PI]},180
-        //                                 ]
-        //                             }},{
-        //                             $cos: {
-        //                                 $divide: [
-        //                                     {$multiply: [Number("$latitude"||0),Math.PI]},180
-        //                                 ]
-        //                             }},{
-        //                             $cos: {
-        //                                 $subtract: [{
-        //                                     $divide: [
-        //                                         {$multiply: [Number("$longitude"||0),Math.PI]},180
-        //                                     ]},{
-        //                                         $divide: [
-        //                                             {$multiply: [lon,Math.PI]},180
-        //                                         ]
-        //                                     }]
-        //                                 }
-        //                             }
-        //                         ]}
-        //                     ]
-        //                 }
-        //             },
-        //             6371000
-        //         ]}
-                
-        //     }
-        // }
-        // {$match: {
-        //     sin: {$gt: 0}
-        // }}
+        {
+            $project: {
+                ad_number: 1,
+                longitude: 1,
+                latitude: 1,
+                sin1: 1,
+                sin2: 1,
+                cos1: 1,
+                cos2: 1,
+                cos3: 1,
+                adding: 1,
+                acos: {
+                    $acos: "$adding"
+                }
+            }
+        },
+        {
+            $project: {
+                ad_number: 1,
+                longitude: 1,
+                latitude: 1,
+                sin1: 1,
+                sin2: 1,
+                cos1: 1,
+                cos2: 1,
+                cos3: 1,
+                adding: 1,
+                acos: 1,
+                distance: {
+                    $multiply: [
+                        "$acos",6371000
+                    ]
+                }
+            }
+        },
+        {
+            $match: {
+                distance: {
+                    $lt: radius
+                }
+            }
+        }
     ]).toArray(function(err, results) {
-        // results.forEach(el => {
-        //     console.log(el)
-        //     dbo.collection("appartments").findOne({'ad_number': {$eq: el._id}}, (err,doc) => {
-        //         var result = [];
-        //         var map = new Map();
-        //         for (const item of doc.price) {
-        //             if(!map.has(item.date)){
-        //                 map.set(item.date, true);    // set any value to Map
-        //                 result.push({
-        //                     date: item.date,
-        //                     value: item.value
-        //                 });
-        //             }
-        //         }
-        //         console.log(doc.price)
-        //         console.log(result)
-        //         throw new Error()
-        //     })
-        // });
-        //console.log(err.message)
+        console.log(err)
         console.log(JSON.stringify(results));
     })
 })

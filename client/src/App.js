@@ -147,6 +147,9 @@ class App extends React.Component {
     var newState = this.state
     var query = this.getFilter()
 
+    newState.result = []
+    this.setState(newState)
+
     newState.result = await this.getResult('city', query)
     this.setState(newState)
   }

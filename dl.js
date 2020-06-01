@@ -61,54 +61,67 @@ class Yad2DL {
     }
 
     static getDistanceCalc(attribs) {
-        if (attribs == null) return null
+        //if (attribs == null) return null
 
-        var lon = attribs.lon
-        var lat = attribs.lat
+        var lon = (attribs != null ? attribs.lon : 0)
+        var lat = (attribs != null ? attribs.lat : 0)
         return {
-            $multiply: [{
-                $acos: {
-                    $add: [{
-                        $multiply: [{
-                            $sin: {
-                                $divide: [
-                                    {$multiply: [lat,Math.PI]},180
-                                ]
-                            },
-                            $sin: {
-                                $divide: [
-                                    {$multiply: ["$latitude",Math.PI]},180
-                                ]
-                            }
-                        }]},{
-                        $multiply: [{
-                            $cos: {
-                                $divide: [
-                                    {$multiply: [lat,Math.PI]},180
-                                ]
-                            }},{
-                            $cos: {
-                                $divide: [
-                                    {$multiply: ["$latitude",Math.PI]},180
-                                ]
-                            }},{
-                            $cos: {
-                                $subtract: [{
-                                    $divide: [
-                                        {$multiply: ["$longitude",Math.PI]},180
-                                    ]},{
-                                        $divide: [
-                                            {$multiply: [lon,Math.PI]},180
-                                        ]
-                                    }]
-                                }
-                            }
-                        ]}
+            enabled: (attribs == null ? false: true),
+            sin1: {
+                $sin: {
+                    $divide: [
+                        {$multiply: [lat,Math.PI]},180
                     ]
                 }
             },
-            6371000
-        ]}
+            sin2: {
+                $sin: {
+                    $divide: [
+                        {$multiply: ["$latitude",Math.PI]},180
+                    ]
+                }
+            },
+            cos1: {
+                $cos: {
+                    $divide: [
+                        {$multiply: [lat,Math.PI]},180
+                    ]
+                }
+            },
+            cos2: {
+                $cos: {
+                    $divide: [
+                        {$multiply: ["$latitude",Math.PI]},180
+                    ]
+                }
+            },
+            cos3: {
+                $cos: {
+                    $subtract: [{
+                        $divide: [
+                            {$multiply: ["$longitude",Math.PI]},180
+                        ]},{
+                            $divide: [
+                                {$multiply: [lon,Math.PI]},180
+                            ]
+                        }]
+                    }
+            },
+            adding: {
+                $add: [
+                    {$multiply: ["$sin1", "$sin2"]},
+                    {$multiply: ["$cos1","$cos2","$cos3"]}
+                ]
+            },
+            distanceFormula: {
+                $multiply: [
+                    {
+                        $acos: "$adding"
+                    },
+                    6371000
+                ]
+            }
+        }
     }
 
     static getResult(groupBy, query, callback) {
@@ -153,7 +166,52 @@ class Yad2DL {
                             price: 1,
                             longitude: 1,
                             latitude: 1,
-                            distance: distanceCalc
+                            sin1: distanceCalc.sin1,
+                            sin2: distanceCalc.sin2,
+                            cos1: distanceCalc.cos1,
+                            cos2: distanceCalc.cos2,
+                            cos3: distanceCalc.cos3
+                        }
+                    },
+                    {
+                        $project: {
+                            ad_number: 1,
+                            city: 1,
+                            neighborhood: 1,
+                            address: 1,
+                            sqMr: 1,
+                            room: 1,
+                            floor: 1,
+                            price: 1,
+                            longitude: 1,
+                            latitude: 1,
+                            sin1: 1,
+                            sin2: 1,
+                            cos1: 1,
+                            cos2: 1,
+                            cos3: 1,
+                            adding: distanceCalc.adding
+                        }
+                    },
+                    {
+                        $project: {
+                            ad_number: 1,
+                            city: 1,
+                            neighborhood: 1,
+                            address: 1,
+                            sqMr: 1,
+                            room: 1,
+                            floor: 1,
+                            price: 1,
+                            longitude: 1,
+                            latitude: 1,
+                            sin1: 1,
+                            sin2: 1,
+                            cos1: 1,
+                            cos2: 1,
+                            cos3: 1,
+                            adding: 1,
+                            distance: distanceCalc.distanceFormula
                         }
                     },
                     {
