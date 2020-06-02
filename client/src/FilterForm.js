@@ -90,26 +90,21 @@ class FilterForm extends Component {
                         <Dropdown values={floor} id="floor" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
-                        <Button onClick={submitForm} className="mr-1">Submit</Button>
+                        <Form.Label>Latitude</Form.Label>
+                        <FilterText id="latitude" type="number" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
-                </Form.Row>
-                {/* <Form.Row>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Longitude</Form.Label>
-                        <FilterNumber id="longitude" onFilterFieldChange={onFilterFieldChange} />
-                    </Form.Group>
-                    <Form.Group as={Form.Col} className="FormGroup">
-                        <Form.Label>Latitude</Form.Label>
-                        <FilterNumber id="latitude" onFilterFieldChange={onFilterFieldChange} />
+                        <FilterText id="longitude" type="number" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Radius</Form.Label>
-                        <FilterNumber id="radius" onFilterFieldChange={onFilterFieldChange} />
+                        <FilterText id="radius" type="number" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Button onClick={submitForm} className="mr-1">Submit</Button>
                     </Form.Group>
-                </Form.Row> */}
+                </Form.Row>
             </Form>
         )
     }
