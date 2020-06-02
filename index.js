@@ -8,7 +8,7 @@ var fs = require('fs')
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var citiesCodes = [6300,5000,7400,8300,8400,6400,9700,7900]
+var citiesCodes = [6300,5000,7400,8300,8400,6400,9700,7900,8600,9000,4000]
 const setTimer = true
 // try to get cities codes from cmd
 if (process.argv.length > 2) {

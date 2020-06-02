@@ -85,6 +85,7 @@ class App extends React.Component {
       })
     }).then(res => result = res)
   
+    result.sort((a,b)=> (a._id < b._id ? -1 : (a._id > b._id ? 1 : 0)))
     return result
   }
   

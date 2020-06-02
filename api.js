@@ -16,7 +16,6 @@ app.get('/api/fieldvalues/:fieldname', async (req, res) => {
     return val != null
   })
   
-  console.log(JSON.stringify(values))
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(values))
 });
@@ -43,7 +42,6 @@ const server = app.listen(PORT, () =>
 
 const getDistinctValues = async (fieldName, query) => {
   let values
-  console.log('fielName='+fieldName+' query='+JSON.stringify(query))
   await new Promise((resolve,reject) => {
     Yad2DL.getDistinct(fieldName, values => {
         resolve(values)
