@@ -42,7 +42,7 @@ class Yad2DL {
     }
 
     static matchAttrib(attribs) {
-        var filterAttrib =  '{'+ attribs.replace(/(\$\w{2,3})(?=:)/g, "\"$1\"") +'}'
+        var filterAttrib =  '{'+ attribs.replace(/(\$\w{2,5})(?=:)/g, "\"$1\"") +'}'
         var obj = JSON.parse(filterAttrib)
         for (var entry in obj) {
             if (/\d{4}\-\d{1,2}\-\d{1,2}/g.test(obj[entry]))

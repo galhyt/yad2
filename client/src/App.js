@@ -102,7 +102,7 @@ class App extends React.Component {
   }
 
   getFilter() {
-    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue,monthValue,floorValue} = this.state
+    const {cityValue,neighborhoodValue,fromRoomsValue,toRoomsValue,monthValue,floorValue,addressValue} = this.state
     var query = 'sqMr=$ne:0&room=$ne:0'
     if (cityValue != null && cityValue != '- All -') {
       query += '&city=$eq:"'+cityValue +'"'
@@ -133,6 +133,10 @@ class App extends React.Component {
       else {
         query += '&room=' + roomClause
       }
+    }
+
+    if (addressValue != null) {
+      query += '&address=$regex:"' + addressValue + '"'
     }
 
     const {longitudeValue, latitudeValue, radiusValue} = this.state

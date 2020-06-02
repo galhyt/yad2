@@ -11,16 +11,18 @@ class FilterElem extends Component {
     }
 }
 
-class FilterNumber extends FilterElem {
+class FilterText extends FilterElem {
     render() {
-        const {id} = this.props
+        const {id,type,placeholder} = this.props
         this.id = id
         
-        return <Form.Control as="input" type="number" id={id} name={id} onChange={this.handleChange.bind(this)} className="number" />
+        return <Form.Control as="input" type={type} id={id} name={id} placeholder={placeholder} onChange={this.handleChange.bind(this)} className={type} />
     }
 }
 
 class Dropdown extends FilterElem {
+    curVal = null
+
     txt(val) {
         return val
     }
@@ -30,7 +32,9 @@ class Dropdown extends FilterElem {
         const {id} = this.props
         this.id = id
         const options = values.map((val, i) => {
-            return <option value={val} key={i}>{this.txt(val)}</option>
+            var selected = false
+            if (val == this.curVal) selected = true
+            return <option value={val} selected={selected} key={i}>{this.txt(val)}</option>
         })
         
         return <Form.Control as="select" id={id} name={id} onChange={this.handleChange.bind(this)}>{options}</Form.Control>
@@ -40,6 +44,12 @@ class Dropdown extends FilterElem {
 class MonthDropdown extends Dropdown {
     txt(val) {
         return val.replace('-01', '')
+    }
+
+    render() {
+        const {values} = this.props
+        this.curVal = values[values.length-1]
+        return super.render()
     }
 }
 
@@ -58,16 +68,22 @@ class FilterForm extends Component {
                         <Dropdown values={neighborhoodValues} id="neighborhood" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
-                        <Form.Label>From no. of rooms</Form.Label>
-                        <FilterNumber id="fromRooms" onFilterFieldChange={onFilterFieldChange} />
-                    </Form.Group>
-                    <Form.Group as={Form.Col} className="FormGroup">
-                        <Form.Label>To no. of rooms</Form.Label>
-                        <FilterNumber id="toRooms" onFilterFieldChange={onFilterFieldChange} />
+                        <Form.Label>Address</Form.Label>
+                        <FilterText id="address" type="text" placeholder="<text>|<text>" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Month</Form.Label>
                         <MonthDropdown values={monthArr} id="month" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                </Form.Row>
+                <Form.Row>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>From no. of rooms</Form.Label>
+                        <FilterText id="fromRooms" type="number" onFilterFieldChange={onFilterFieldChange} />
+                    </Form.Group>
+                    <Form.Group as={Form.Col} className="FormGroup">
+                        <Form.Label>To no. of rooms</Form.Label>
+                        <FilterText id="toRooms" type="number" onFilterFieldChange={onFilterFieldChange} />
                     </Form.Group>
                     <Form.Group as={Form.Col} className="FormGroup">
                         <Form.Label>Floor</Form.Label>

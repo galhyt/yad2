@@ -53,7 +53,7 @@ const getDistinctValues = async (fieldName, query) => {
 
 const getResult = async (groupBy, query) => {
   let values
-  console.log('getResult: query='+query)
+  console.log('getResult: query='+JSON.stringify(query))
   await new Promise((resolve,reject) => {
     Yad2DL.getResult(groupBy, query, values => {
         resolve(values)

@@ -9,3 +9,7 @@
 .FormGroup .number {
     width: 5em;
 }
+
+.FormGroup .text {
+    width: 10em;
+}
