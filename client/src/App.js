@@ -159,7 +159,7 @@ class App extends React.Component {
     this.setState(newState)
   }
 
-  async drillDown(parentType, parentName, childType, resultTableId, grandParentType, grandParentName) {
+  async drillDown(parentType, parentName, childType, resultTableId, grandParentType, grandParentName, avgPerRoom, avgSqmr) {
     var newState = this.state
     var query = this.getFilter()
     var arr = [{type: parentType, name:parentName},{type:grandParentType, name:grandParentName}]
@@ -171,6 +171,7 @@ class App extends React.Component {
         query += '&'+el.type+'=$eq:"'+el.name+'"'
     })
     const data = await this.getResult(childType, query)
+    this.overrideresults(data, avgPerRoom, avgSqmr)
 
     ReactDOM.render(
       <React.StrictMode>
@@ -179,7 +180,18 @@ class App extends React.Component {
       document.getElementById(resultTableId)
     );
 
-    this.setState(newState)
+    //this.setState(newState)
+  }
+
+  overrideresults(data, avgPerRoom, avgSqmr) {
+    if (avgSqmr == null || avgPerRoom == null) return
+
+    data.forEach(el=> {
+      el.diverse = {
+        avgPerRoom: el.avgPerRoom - Number(avgPerRoom),
+        avgSqmr: el.avgSqmr - Number(avgSqmr)
+      }
+    })
   }
 
   render() {
