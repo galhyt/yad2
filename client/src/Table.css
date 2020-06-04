@@ -24,3 +24,15 @@ table.city > thead tr th,table.city > tbody tr:not(:last-of-type) td {
 table.city > thead tr th:not(:last-of-type),table.city > tbody tr td:not(:last-of-type) {
     border-right-style: solid;
 }
+
+table tr td.down_arrow::after {
+    margin-left: 1em;
+    content: url('downArrow.svg');
+    cursor: pointer;
+}
+
+table tr td.up_arrow::after {
+    margin-left: 1em;
+    content: url('upArrow.svg');
+    cursor: pointer;
+}
