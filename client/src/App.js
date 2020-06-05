@@ -189,7 +189,9 @@ class App extends React.Component {
     data.forEach(el=> {
       el.diverse = {
         avgPerRoom: el.avgPerRoom - Number(avgPerRoom),
-        avgSqmr: el.avgSqmr - Number(avgSqmr)
+        avgSqmr: el.avgSqmr - Number(avgSqmr),
+        parentAvgPerRoom: Number(avgPerRoom),
+        parentAvgSqmr: Number(avgSqmr)
       }
     })
   }
