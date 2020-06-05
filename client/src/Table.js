@@ -28,6 +28,15 @@ const drillDic = {
 }
 
 class TableBody extends Component {
+    componentDidMount() {
+        document.onclick = event => {
+            const self = event.target
+            if ([...self.classList].indexOf('tooltip_ext') != -1) {
+                self.previousSibling.classList.toggle('show')
+            }
+        }
+    }
+
     onDrillClick(event) {
         const el = event.target
         const toOpen = el.className.indexOf('drillopen') !=-1
@@ -53,18 +62,29 @@ class TableBody extends Component {
             drillElem.style.display = 'none'
     }
 
-    getDiverseCls(el) {
-        var diverseClasses = {
-            diversePerRoomCls : '',
-            diverseSqMrCls : ''
-        }
+    getDiverseCls(el, diverseType) {
+        return (el.diverse[diverseType] < 0 ? 'down_arrow' : 'up_arrow')
+    }
+
+    getDiverseTooltip(el, diverseType) {
+        if (el.diverse == null) return null
+
+        const parentAvg = (diverseType == 'avgSqmr' ? el.diverse.parentAvgSqmr : el.diverse.parentAvgPerRoom)
+        const diverseVal = (diverseType == 'avgSqmr' ? el.diverse.avgSqmr : el.diverse.avgPerRoom)
+        const perc = (diverseVal / parentAvg) * 100
+        return (perc > 0 ? '+' : '') + perc.toFixed(2) + '%'
+    }
+
+    getAvgContent(el, diverseType) {
+        const avg = el[diverseType]
+        var content = <span>{avg.toFixed(2)}</span>
         if (el.diverse != null) {
-            const {avgPerRoom, avgSqmr} = el.diverse
-            diverseClasses.diversePerRoomCls = (avgPerRoom < 0 ? 'down_arrow' : (avgPerRoom > 0 ? 'up_arrow' : ''))
-            diverseClasses.diverseSqMrCls = (avgSqmr < 0 ? 'down_arrow' : (avgSqmr > 0 ? 'up_arrow' : ''))
+            const tooltipTxt = this.getDiverseTooltip(el, diverseType)
+            content = [content, <span className="tooltiptext">{tooltipTxt}</span>,
+            <span className={this.getDiverseCls(el, diverseType) + ' tooltip_ext'}></span>]
         }
 
-        return diverseClasses
+        return content
     }
 
     render() {
@@ -74,35 +94,25 @@ class TableBody extends Component {
         let child = drillDic[type]
         const rows = data.map((el, indx) => {
             const id = type + "_" + el._id + "_" + child + "_" + indx
-            const diverseClasses = this.getDiverseCls(el)
+            var content = (<tr key={"row_"+id}>
+                            <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} parentType={parentType} parentName={parentName} avgPerRoom={el.avgPerRoom} avgSqmr={el.avgSqmr} className={(child != null ? "drillDown drillopen" : '')}></td>
+                            <td>{el._id}</td>
+                            <td>{this.getAvgContent(el, 'avgSqmr')}</td>
+                            <td>{this.getAvgContent(el, 'avgPerRoom')}</td>
+                            <td>{el.count}</td>
+                        </tr>)
             if (child != null) {
-                return (
-                    <><tr key={"row_"+id}>
-                        <td onClick={this.onDrillClick.bind(this)} type={type} typeid={el._id} child={child} idattrib={id} parentType={parentType} parentName={parentName} avgPerRoom={el.avgPerRoom} avgSqmr={el.avgSqmr} className="drillDown drillopen"></td>
-                        <td>{el._id}</td>
-                        <td className={diverseClasses.diverseSqMrCls}>{el.avgSqmr.toFixed(2)}</td>
-                        <td className={diverseClasses.diversePerRoomCls}>{el.avgPerRoom.toFixed(2)}</td>
-                        <td>{el.count}</td>
-                    </tr>
+                content = [content,
                     <tr key={"drill_"+id}>
                         <td></td>
                         <td colSpan="4">
                             <div id={id}></div>
                         </td>
-                    </tr></>
-                )
-            }
-            else {
-                return (
-                    <tr key={"row_"+id}>
-                        <td></td>
-                        <td>{el._id}</td>
-                        <td className={diverseClasses.diverseSqMrCls}>{el.avgSqmr.toFixed(2)}</td>
-                        <td className={diverseClasses.diversePerRoomCls}>{el.avgPerRoom.toFixed(2)}</td>
-                        <td>{el.count}</td>
                     </tr>
-                )
+                ]
             }
+
+            return content
         })
         return <tbody>{rows}</tbody>
     }
