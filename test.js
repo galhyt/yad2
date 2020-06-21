@@ -22,111 +22,11 @@ Yad2DL.connect((dbo) => {
     dbo.collection("appartments").aggregate([
         {$unwind: "$price"},
         {
-            $project: {
-                ad_number: 1,
-                longitude: 1,
-                latitude: 1,
-                sin1: {
-                    $sin: {
-                        $divide: [
-                            {$multiply: [lat,Math.PI]},180
-                        ]
-                    }
-                },
-                sin2: {
-                    $sin: {
-                        $divide: [
-                            {$multiply: ["$latitude",Math.PI]},180
-                        ]
-                    }
-                },
-                cos1: {
-                    $cos: {
-                        $divide: [
-                            {$multiply: [lat,Math.PI]},180
-                        ]
-                    }
-                },
-                cos2: {
-                    $cos: {
-                        $divide: [
-                            {$multiply: ["$latitude",Math.PI]},180
-                        ]
-                    }
-                },
-                cos3: {
-                    $cos: {
-                        $subtract: [{
-                            $divide: [
-                                {$multiply: ["$longitude",Math.PI]},180
-                            ]},{
-                                $divide: [
-                                    {$multiply: [lon,Math.PI]},180
-                                ]
-                            }]
-                        }
-                }
-            }
-        
-        },
-        {
-            $project: {
-                ad_number: 1,
-                longitude: 1,
-                latitude: 1,
-                sin1: 1,
-                sin2: 1,
-                cos1: 1,
-                cos2: 1,
-                cos3: 1,
-                adding: {
-                    $add: [
-                        {$multiply: ["$sin1", "$sin2"]},
-                        {$multiply: ["$cos1","$cos2","$cos3"]}
-                    ]
-                }
-            }
-        },
-        {
-            $project: {
-                ad_number: 1,
-                longitude: 1,
-                latitude: 1,
-                sin1: 1,
-                sin2: 1,
-                cos1: 1,
-                cos2: 1,
-                cos3: 1,
-                adding: 1,
-                acos: {
-                    $acos: "$adding"
-                }
-            }
-        },
-        {
-            $project: {
-                ad_number: 1,
-                longitude: 1,
-                latitude: 1,
-                sin1: 1,
-                sin2: 1,
-                cos1: 1,
-                cos2: 1,
-                cos3: 1,
-                adding: 1,
-                acos: 1,
-                distance: {
-                    $multiply: [
-                        "$acos",6371000
-                    ]
-                }
-            }
-        },
-        {
             $match: {
-                distance: {
-                    $lt: radius
-                }
+                city: {
+                    $eq: "גבעתיים",
+                },
+                address: {$eq: "כצנלסון 39"}
             }
         }
     ]).toArray(function(err, results) {

@@ -216,6 +216,11 @@ class Yad2DL {
                         }
                     },
                     {
+                        $match: {
+                            lastPrice: {$gt: 0}
+                        }
+                    },
+                    {
                         $group:  {
                             _id: "$"+groupBy,
                             sumSqmr: {$sum: "$sqMr"},
