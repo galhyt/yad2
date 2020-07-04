@@ -32,7 +32,7 @@ const options = {
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7',
     'cache-control': 'max-age=0',
-    'cookie': 'adoric_user=1; adoric_goals=%5B%225ae5882c307a8fbd0017c1c5%22%5D; adoric_uniq_day_id=5ec04b15ff961f001890c7f0; y2018-2-cohort=43; __uzma=49b87779-ea29-4440-964f-cd6e21916436; __uzmb=1586022568; __ssds=3; __uzmaj3=953a2de9-b7d8-458b-831b-8dcb62950474; __ssuzjsr3=a9be0cd8e; __uzmbj3=1586022575; __gads=ID=a6aa2029485b447e:T=1586022576:S=ALNI_MZUMfgQ7fFOvjz3l06yjBYA6Xt5cQ; _ga=GA1.3.1763115841.1586380895; abTestKey=92; yad2upload=536870922.27765.0000; fitracking_48=no; use_elastic_search=1; bc.visitorToken=6652260848939728896; historyprimaryarea=hamerkaz_area___sharon_area; historysecondaryarea=ramat_gan_givataim___ramat_hasharon_herzeliya; DCST=pE9; SPSI=1fb29a4723506dc3d2f6b83601f68e80; UTGv2=h41d1202054a58e8ca3f9f721c797d013882; _gid=GA1.3.307618122.1589660435; fi_utm=direct%7Cdirect%7C%7C%7C%7C; y2_cohort_2020=44; y2session=nMPBzC44ILWj3gHfFeA022EAKPV96qKQjOViUjoo; spcsrf=6a26580f479619d57e413479569542e0; PRLST=Hh; favorites_userid=bia922357116; __uzmcj3=8092913633139; __uzmdj3=1589660806; adOtr=92fP17b2453; __uzmc=5399293173487; __uzmd=1589660809; DSR=LBLHS4TI2ryAZIBOwY+X7UWaonBgvT1HPuBJLQGvYBaG5ZMByvtHzBjxPfGCKJJtd4gyGms5463oscnn5ADdnw==; DCSS=ADE3B32496826E972180B520C3DAEBC05B2E10F; DGCC=tK',
+    'cookie': '__uzma=49b87779-ea29-4440-964f-cd6e21916436; __uzmb=1586022568; __ssds=3; __uzmaj3=953a2de9-b7d8-458b-831b-8dcb62950474; __ssuzjsr3=a9be0cd8e; __uzmbj3=1586022575; __gads=ID=a6aa2029485b447e:T=1586022576:S=ALNI_MZUMfgQ7fFOvjz3l06yjBYA6Xt5cQ; _ga=GA1.3.1763115841.1586380895; bc.visitorToken=6652260848939728896; y2id=2ac6dd4ea43cc183fe0154e90314dcf4__20200518101327__e27262098c58c0a3edf9e7061953823a; UTGv2=h41d1202054a58e8ca3f9f721c797d013882; leadSaleRentFree=60; abTestKey=62; fitracking_48=no; searchB144FromYad2=2_C_1844; y2018-2-cohort=72; canary=never; __uzmcj3=8821525062206; __uzmdj3=1593853618; server_env=aws-prod; y2_cohort_2020=83; use_elastic_search=1; __uzmd=1593853623; favorites_userid=bia922357116; __uzmc=84156152815527; fi_utm=direct%7Cdirect%7C%7C%7C%7C',
     'referer': 'https://www.yad2.co.il/realestate/rent?city=6300&page=2',
     'sec-fetch-dest': 'document',
     'sec-fetch-mode': 'navigate',
@@ -147,7 +147,7 @@ const getDataTbl = txt => {
     const jsonTxt = match[1].replace(/(?<=[,{}}\]])(\w+?)(?=:)/g,"\"$1\"")
                             .replace(/(?<!"[^"]+):([^[{}":]+?)(?=[,}])/g, ":\"$1\"")
                             .replace(/\[[^\[\]]+?\]/g, "[]")
-                            .replace(/(?<=:"[^"]+[^\\])"(?!\}*,"\w+":)/g, "\\\"")
+    //                        .replace(/(?<=:"[^"]+[^\\])"(?!\}*,"\w+":)/g, "\\\"")
 
     const data = JSON.parse(jsonTxt)
     for(var i = 0 ; i < data.items.length ; i++) {
@@ -274,4 +274,5 @@ function addToDb(data) {
   });
 }
 
-main()
+//main()
+setTimeout(main, 15000);
