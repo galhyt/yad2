@@ -79,7 +79,7 @@ const doScheduledTask = async (indx, page, iteration, retake) => {
     console.log('iteration=%s,city=%s,page=%s,no of records=%s,date=%s', iteration, citiesCodes[indx], page, len, new Date())
     if (retake) return
 
-    if (len < 15) {
+    if (typeof(len) == 'undefined' || len < 15) {
       indx++;
       page = undefined;
     }
